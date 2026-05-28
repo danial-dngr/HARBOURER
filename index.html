@@ -12,7 +12,7 @@
   <style>
     :root {
       --bg-primary: white;
-      --bg-secondary: #f8f8f8;
+      --bg-secondary: yellow;
       --text-primary: black;
       --text-secondary: #333;
       --border-color: #ddd;
@@ -25,14 +25,14 @@
 
       /* Swiss grid */
       --swiss-columns: 12;
-      --swiss-gap: 6px;
+      --swiss-gap: 2px;
       --swiss-row: 12px; /* baseline row height */
 
       /* Bottom menu columns (sync with info bar) */
       --menu-cols: 5;
 
       /* Overlap in grid mode (~15px) */
-      --overlap-offset: 15px;
+      --overlap-offset: 0px;
     }
 
     @media (max-width: 800px) {
@@ -41,7 +41,7 @@
 
     body.dark-mode {
       --bg-primary: #1a1a1a;
-      --bg-secondary: #2a2a2a;
+      --bg-secondary: #yellow;
       --text-primary: #f0f0f0;
       --text-secondary: #c0c0c0;
       --border-color: #444;
@@ -58,8 +58,12 @@
       font-display: swap;
     }
 
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     html, body {
-      margin: 5%; padding: 5%;
+      margin: 0; padding: 0;
       width: 100%; height: 100%;
     }
 
@@ -218,13 +222,18 @@
 
     .grid-container .preview {
       position: relative !important;
-      transform: translate(var(--overlap-offset), var(--overlap-offset)) !important; /* ~15px overlap */
+      transform: none !important;
       top: auto !important; left: auto !important;
-      width: 100% !important; height: auto !important;
-      min-width: auto !important; min-height: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-width: 0 !important;
+      min-height: auto !important;
       box-shadow: 0 2px 10px var(--shadow-color);
+      padding: 21px; /* 70% of normal 30px preview padding */
       resize: none; /* disabled in grid */
       z-index: auto;
+      overflow: hidden;
     }
 
     /* === Preview windows === */
@@ -259,9 +268,9 @@
       text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;
     }
 
-    .preview-image-wrapper { width: 100%; margin-bottom: 14px; }
+    .preview-image-wrapper { width: 100%; max-width: 100%; margin-bottom: 14px; overflow: hidden; }
     .preview-image-wrapper img, .preview-image-wrapper video {
-      width: 100%; height: auto; display: block; border: none;
+      width: 100%; max-width: 100%; height: auto; display: block; border: none;
     }
 
     .preview-blurb {
@@ -508,6 +517,58 @@
       return { colSpan, rowSpan };
     };
 
+    const getRandomGridSizeForMedia = (src) => {
+      const sizes = [
+        { colSpan: 2, rowSpan: 18 },
+        { colSpan: 3, rowSpan: 20 },
+        { colSpan: 3, rowSpan: 23 },
+        { colSpan: 4, rowSpan: 21 },
+        { colSpan: 4, rowSpan: 24 },
+        { colSpan: 5, rowSpan: 26 }
+      ];
+
+      const wideSizes = [
+        { colSpan: 4, rowSpan: 16 },
+        { colSpan: 5, rowSpan: 18 },
+        { colSpan: 5, rowSpan: 20 }
+      ];
+
+      const tallSizes = [
+        { colSpan: 2, rowSpan: 26 },
+        { colSpan: 3, rowSpan: 29 },
+        { colSpan: 3, rowSpan: 32 }
+      ];
+
+      const videoSizes = [
+        { colSpan: 4, rowSpan: 22 },
+        { colSpan: 5, rowSpan: 24 },
+        { colSpan: 5, rowSpan: 26 }
+      ];
+
+      const source = (src || '').toLowerCase();
+      const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(source);
+
+      const isWide =
+        source.includes('front') ||
+        source.includes('screen') ||
+        source.includes('screenshot') ||
+        source.includes('landscape') ||
+        source.includes('wide') ||
+        source.includes('holding') ||
+        source.includes('built');
+
+      const isTall =
+        source.includes('portrait') ||
+        source.includes('poster') ||
+        source.includes('vertical');
+
+      if (isVideo) return videoSizes[Math.floor(Math.random() * videoSizes.length)];
+      if (isWide) return wideSizes[Math.floor(Math.random() * wideSizes.length)];
+      if (isTall) return tallSizes[Math.floor(Math.random() * tallSizes.length)];
+
+      return sizes[Math.floor(Math.random() * sizes.length)];
+    };
+
     const addGridResizer = (preview) => {
       if (preview.querySelector('.grid-resize')) return;
       const handle = document.createElement('div');
@@ -531,7 +592,7 @@
           let newCol = Math.round((startColSpan * effCol + dx) / effCol);
           let newRow = Math.round((startRowSpan * effRow + dy) / effRow);
 
-          const minRows = Math.max(1, Math.ceil(500 / effRow)); /* enforce 500px min */
+          const minRows = Math.max(1, Math.ceil(350 / effRow)); /* enforce 350px min */
           newCol = Math.max(1, Math.min(cols, newCol));
           newRow = Math.max(minRows, newRow);
 
@@ -548,7 +609,7 @@
           window.removeEventListener('touchend', onUp);
           window.removeEventListener('touchcancel', onUp);
           const { effRow } = getGridMetrics();
-          autoSizeRowSpan(preview, Math.max(1, Math.ceil(500/effRow)));
+          autoSizeRowSpan(preview, Math.max(1, Math.ceil(350/effRow)));
         };
 
         window.addEventListener('mousemove', onMove);
@@ -598,7 +659,7 @@
           window.removeEventListener('touchcancel', onUp);
           preview.classList.remove('dragging');
           const { effRow } = getGridMetrics();
-          autoSizeRowSpan(preview, Math.max(1, Math.ceil(500/effRow)));
+          autoSizeRowSpan(preview, Math.max(1, Math.ceil(350/effRow)));
         };
 
         window.addEventListener('mousemove', onMove);
@@ -617,7 +678,7 @@
       const keys = Object.keys(openPreviews);
       const count = keys.length;
       const { cols, effRow, containerHeight } = getGridMetrics();
-      const minRows = Math.max(1, Math.ceil(500 / effRow)); /* 500px min */
+      const minRows = Math.max(1, Math.ceil(350 / effRow)); /* 350px min */
 
       keys.forEach((project) => {
         const preview = openPreviews[project];
@@ -625,7 +686,7 @@
 
         preview.classList.add('in-grid');
         preview.style.position = 'relative';
-        preview.style.transform = (count === 1) ? 'translate(0,0)' : `translate(var(--overlap-offset), var(--overlap-offset))`;
+        preview.style.transform = 'none';
         preview.style.top = 'auto';
         preview.style.left = 'auto';
         preview.style.width = '100%';
@@ -636,10 +697,12 @@
           colSpan = cols;
           rowSpan = Math.max(minRows, Math.ceil(containerHeight / effRow));
         } else {
-          const r = preview.getBoundingClientRect();
-          const approx = approxSpansFromPixels(r.width || 600, r.height || 500);
-          colSpan = Math.min(cols, Math.max(1, approx.colSpan));
-          rowSpan = Math.max(minRows, approx.rowSpan);
+          const media = preview.querySelector('img, video');
+          const src = media ? media.getAttribute('src') : '';
+          const randomSize = getRandomGridSizeForMedia(src);
+
+          colSpan = Math.min(cols, randomSize.colSpan);
+          rowSpan = Math.max(minRows, randomSize.rowSpan);
         }
 
         preview.dataset.colSpan = String(colSpan);
@@ -723,7 +786,7 @@
         // Determine if this will be the only one open
         const countBefore = Object.keys(openPreviews).length; // number already open (before adding this)
         const { cols, effRow, containerHeight } = getGridMetrics();
-        const minRows = Math.max(1, Math.ceil(500 / effRow));
+        const minRows = Math.max(1, Math.ceil(350 / effRow));
 
         let colSpan, rowSpan;
         if (countBefore === 0) {
@@ -732,9 +795,11 @@
           rowSpan = Math.max(minRows, Math.ceil(containerHeight / effRow));
           preview.style.transform = 'translate(0,0)';
         } else {
-          // Otherwise open where it fits, with a minimum height of 500px
-          colSpan = 2;
-          rowSpan = Math.max(2, minRows);
+          // Otherwise open where it fits, with randomized sizing reduced to roughly 70%
+          const randomSize = getRandomGridSizeForMedia(data.image);
+
+          colSpan = Math.min(cols, randomSize.colSpan);
+          rowSpan = Math.max(minRows, randomSize.rowSpan);
         }
 
         preview.dataset.colSpan = String(colSpan);
@@ -766,7 +831,7 @@
     window.addEventListener('resize', () => {
       if (!gridMode) return;
       const { effRow } = getGridMetrics();
-      const minRows = Math.max(1, Math.ceil(500 / effRow));
+      const minRows = Math.max(1, Math.ceil(350 / effRow));
       Object.values(openPreviews).forEach(p => autoSizeRowSpan(p, minRows));
     });
 
