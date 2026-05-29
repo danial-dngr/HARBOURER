@@ -469,6 +469,98 @@
       }
     }
 
+
+
+    /* === Dynamic project heading + close all === */
+    .menu-heading-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 6px 0;
+    }
+
+    .menu-heading-row h4 {
+      font-weight: 400;
+      font-size: clamp(14px, 1.4vw, 18px);
+      margin: 0;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    .close-all-button {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-weight: 400;
+      font-size: clamp(14px, 1.4vw, 18px);
+      line-height: 1;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: right;
+    }
+
+    .close-all-button:hover {
+      color: var(--hover-color);
+      background: transparent;
+    }
+
+    #projectList li.is-active {
+      color: var(--hover-color);
+    }
+
+    .content ul {
+      line-height: 1.08;
+      row-gap: clamp(1px, 0.28vw, 4px);
+    }
+
+
+    /* === Minor UI refinements === */
+    .content ul li:hover {
+      color: var(--text-secondary) !important;
+    }
+
+    .close-all-button {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      margin: -5px 0 0 0;
+      border: 1px solid var(--border-color) !important;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .close-all-button::before {
+      content: "×";
+      font-weight: bold;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .close-all-button:hover {
+      color: var(--text-primary) !important;
+      border-color: var(--text-primary) !important;
+      background: transparent !important;
+    }
+
+    .menu-heading-row {
+      align-items: start;
+    }
+
 </style>
 </head>
 <body>
@@ -495,33 +587,36 @@
   <div class="mobile-stack-container" id="mobileStackContainer" aria-live="polite"></div>
 
   <div class="content">
-    <h4>Projects</h4>
+    <div class="menu-heading-row">
+      <h4 id="projectMenuHeading">PROJECTS</h4>
+      <button class="close-all-button" id="closeAllBtn" type="button" title="Close all projects" aria-label="Close all projects"></button>
+    </div>
     <ul id="projectList">
-      <li data-project="SOLARIS"><span>01</span>SOLARIS</li>
-      <li data-project="GO MAD"><span>02</span>GO MAD</li>
-      <li data-project="LSW"><span>03</span>LSW</li>
-      <li data-project="VANCE LIVING"><span>04</span>VANCE LIVING</li>
-      <li data-project="ABOUT DNGR"><span>05</span>ABOUT DNGR</li>
-      <li data-project="NOCTURNAL INGESTIONS"><span>06</span>NOCTURNAL</li>
-      <li data-project="THAIMESE"><span>07</span>THAIMESE</li>
-      <li data-project="KINETIC MOTION"><span>08</span>KINETIC MOTION</li>
-      <li data-project="GOM MAKER"><span>09</span>GOM MAKER</li>
-      <li data-project="HOLIDAY"><span>10</span>HOLIDAY</li>
-      <li data-project="THE TASTY STUFF"><span>11</span>THE TASTY STUFF</li>
-      <li data-project="PROJECT TWELVE"><span>12</span>PROJECT TWELVE</li>
-      <li data-project="PROJECT THIRTEEN"><span>13</span>PROJECT THIRTEEN</li>
-      <li data-project="PROJECT FOURTEEN"><span>14</span>PROJECT FOURTEEN</li>
-      <li data-project="PROJECT FIFTEEN"><span>15</span>PROJECT FIFTEEN</li>
-      <li data-project="PROJECT SIXTEEN"><span>16</span>PROJECT SIXTEEN</li>
-      <li data-project="PROJECT SEVENTEEN"><span>17</span>PROJECT SEVENTEEN</li>
-      <li data-project="PROJECT EIGHTEEN"><span>18</span>PROJECT EIGHTEEN</li>
-      <li data-project="PROJECT NINETEEN"><span>19</span>PROJECT NINETEEN</li>
-      <li data-project="PROJECT TWENTY"><span>20</span>PROJECT TWENTY</li>
-      <li data-project="PROJECT TWENTY-ONE"><span>21</span>PROJECT TWENTY-ONE</li>
-      <li data-project="PROJECT TWENTY-TWO"><span>22</span>PROJECT TWENTY-TWO</li>
-      <li data-project="PROJECT TWENTY-THREE"><span>23</span>PROJECT TWENTY-THREE</li>
-      <li data-project="PROJECT TWENTY-FOUR"><span>24</span>PROJECT TWENTY-FOUR</li>
-      <li data-project="PROJECT TWENTY-FIVE"><span>25</span>PROJECT TWENTY-FIVE</li>
+      <li data-project="SOLARIS" data-category="WEB"><span>01</span>SOLARIS</li>
+      <li data-project="GO MAD" data-category="EXPERIMENTAL"><span>02</span>GO MAD</li>
+      <li data-project="LSW" data-category="BRANDING"><span>03</span>LSW</li>
+      <li data-project="VANCE LIVING" data-category="WEB"><span>04</span>VANCE LIVING</li>
+      <li data-project="ABOUT DNGR" data-category="WEB"><span>05</span>ABOUT DNGR</li>
+      <li data-project="NOCTURNAL INGESTIONS" data-category="BRANDING"><span>06</span>NOCTURNAL</li>
+      <li data-project="THAIMESE" data-category="BRANDING"><span>07</span>THAIMESE</li>
+      <li data-project="KINETIC MOTION" data-category="MOTION"><span>08</span>KINETIC MOTION</li>
+      <li data-project="GOM MAKER" data-category="WEB"><span>09</span>GOM MAKER</li>
+      <li data-project="HOLIDAY" data-category="PACKAGING"><span>10</span>HOLIDAY</li>
+      <li data-project="THE TASTY STUFF" data-category="PACKAGING"><span>11</span>THE TASTY STUFF</li>
+      <li data-project="PROJECT TWELVE" data-category="EXPERIMENTAL"><span>12</span>PROJECT TWELVE</li>
+      <li data-project="PROJECT THIRTEEN" data-category="EXPERIMENTAL"><span>13</span>PROJECT THIRTEEN</li>
+      <li data-project="PROJECT FOURTEEN" data-category="EXPERIMENTAL"><span>14</span>PROJECT FOURTEEN</li>
+      <li data-project="PROJECT FIFTEEN" data-category="EXPERIMENTAL"><span>15</span>PROJECT FIFTEEN</li>
+      <li data-project="PROJECT SIXTEEN" data-category="EXPERIMENTAL"><span>16</span>PROJECT SIXTEEN</li>
+      <li data-project="PROJECT SEVENTEEN" data-category="EXPERIMENTAL"><span>17</span>PROJECT SEVENTEEN</li>
+      <li data-project="PROJECT EIGHTEEN" data-category="EXPERIMENTAL"><span>18</span>PROJECT EIGHTEEN</li>
+      <li data-project="PROJECT NINETEEN" data-category="EXPERIMENTAL"><span>19</span>PROJECT NINETEEN</li>
+      <li data-project="PROJECT TWENTY" data-category="EXPERIMENTAL"><span>20</span>PROJECT TWENTY</li>
+      <li data-project="PROJECT TWENTY-ONE" data-category="EXPERIMENTAL"><span>21</span>PROJECT TWENTY-ONE</li>
+      <li data-project="PROJECT TWENTY-TWO" data-category="EXPERIMENTAL"><span>22</span>PROJECT TWENTY-TWO</li>
+      <li data-project="PROJECT TWENTY-THREE" data-category="EXPERIMENTAL"><span>23</span>PROJECT TWENTY-THREE</li>
+      <li data-project="PROJECT TWENTY-FOUR" data-category="EXPERIMENTAL"><span>24</span>PROJECT TWENTY-FOUR</li>
+      <li data-project="PROJECT TWENTY-FIVE" data-category="EXPERIMENTAL"><span>25</span>PROJECT TWENTY-FIVE</li>
     </ul>
 
     <!-- Footer info moved into menu -->
@@ -540,15 +635,95 @@
     const openPreviews = {};
     let gridMode = false;
     let zIndex = 10;
+
+    const safeStorage = (() => {
+      try {
+        const testKey = '__dngr_storage_test__';
+        window.localStorage.setItem(testKey, '1');
+        window.localStorage.removeItem(testKey);
+        return window.localStorage;
+      } catch (e) {
+        const memoryStore = {};
+        return {
+          getItem: (key) => Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null,
+          setItem: (key, value) => { memoryStore[key] = String(value); },
+          removeItem: (key) => { delete memoryStore[key]; },
+          clear: () => { Object.keys(memoryStore).forEach((key) => delete memoryStore[key]); }
+        };
+      }
+    })();
+
+
     const isMobileView = () => window.matchMedia('(max-width: 800px)').matches;
+
+    const STORAGE_KEYS = {
+      free: 'dngrPreviewMemoryV1',
+      grid: 'dngrGridMemoryV1'
+    };
+
+    const readStore = (key) => {
+      try { return JSON.parse(safeStorage.getItem(key) || '{}'); }
+      catch(e) { return {}; }
+    };
+
+    const writeStore = (key, value) => {
+      try { safeStorage.setItem(key, JSON.stringify(value)); }
+      catch(e) {}
+    };
+
+    const saveFreePreviewState = (project, preview) => {
+      if (gridMode || isMobileView()) return;
+      const store = readStore(STORAGE_KEYS.free);
+      store[project] = {
+        top: preview.style.top,
+        left: preview.style.left,
+        width: preview.style.width,
+        height: preview.style.height,
+        transform: preview.style.transform,
+        expanded: false
+      };
+      writeStore(STORAGE_KEYS.free, store);
+    };
+
+    const applyFreePreviewState = (project, preview) => {
+      if (gridMode || isMobileView()) return false;
+      const state = readStore(STORAGE_KEYS.free)[project];
+      if (!state) return false;
+      preview.style.top = state.top || '50%';
+      preview.style.left = state.left || '50%';
+      preview.style.width = state.width || '600px';
+      preview.style.height = state.height || 'auto';
+      preview.style.transform = state.transform || 'none';
+
+      return true;
+    };
+
+    const saveGridPreviewState = (project, preview) => {
+      if (!gridMode || isMobileView()) return;
+      const store = readStore(STORAGE_KEYS.grid);
+      store[project] = {
+        colSpan: preview.dataset.colSpan,
+        rowSpan: preview.dataset.rowSpan,
+        colStart: preview.dataset.colStart,
+        rowStart: preview.dataset.rowStart,
+        expanded: false
+      };
+      writeStore(STORAGE_KEYS.grid, store);
+    };
+
+    const getGridPreviewState = (project) => {
+      return readStore(STORAGE_KEYS.grid)[project] || null;
+    };
+
+
 
     // Theme toggle
     const invertBtn = document.getElementById('invertBtn');
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    const savedDarkMode = safeStorage.getItem('darkMode') === 'true';
     if (savedDarkMode) document.body.classList.add('dark-mode');
     invertBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+      safeStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     });
 
     // Grid toggle
@@ -578,13 +753,36 @@
         element.style.zIndex = `${++zIndex}`;
       };
       const move = (e) => {
-        if (!isDragging || gridMode) return;
+        if (!isDragging || gridMode || isMobileView()) return;
+
         const cx = e.touches ? e.touches[0].clientX : e.clientX;
         const cy = e.touches ? e.touches[0].clientY : e.clientY;
-        element.style.left = `${ex + (cx - sx)}px`;
-        element.style.top  = `${ey + (cy - sy)}px`;
+
+        const bounds = getViewportBoundsForFreePreview();
+        const rect = element.getBoundingClientRect();
+
+        const width = rect.width || element.offsetWidth || 600;
+        const height = rect.height || element.offsetHeight || 360;
+
+        const maxLeft = Math.max(bounds.minX, bounds.maxX - width);
+        const maxTop = Math.max(bounds.minY, bounds.maxY - height);
+
+        let nextLeft = ex + (cx - sx);
+        let nextTop = ey + (cy - sy);
+
+        nextLeft = Math.max(bounds.minX, Math.min(nextLeft, maxLeft));
+        nextTop = Math.max(bounds.minY, Math.min(nextTop, maxTop));
+
+        element.style.left = `${nextLeft}px`;
+        element.style.top  = `${nextTop}px`;
+        element.style.transform = 'none';
       };
-      const stop = () => { isDragging = false; element.style.cursor = gridMode ? 'default' : 'grab'; };
+      const stop = () => {
+        if (isDragging) constrainFreePreviewToViewport(element);
+        if (isDragging && element.dataset.project) saveFreePreviewState(element.dataset.project, element);
+        isDragging = false;
+        element.style.cursor = gridMode ? 'default' : 'grab';
+      };
       element.addEventListener('mousedown', start); element.addEventListener('mousemove', move);
       element.addEventListener('mouseup', stop); element.addEventListener('mouseleave', stop);
       element.addEventListener('touchstart', start, {passive:false});
@@ -787,6 +985,7 @@
           window.removeEventListener('touchcancel', onUp);
           const { effRow } = getGridMetrics();
           autoSizeRowSpan(preview, Math.max(1, Math.ceil(350/effRow)));
+          if (preview.dataset.project) saveGridPreviewState(preview.dataset.project, preview);
         };
 
         window.addEventListener('mousemove', onMove);
@@ -837,6 +1036,7 @@
           preview.classList.remove('dragging');
           const { effRow } = getGridMetrics();
           autoSizeRowSpan(preview, Math.max(1, Math.ceil(350/effRow)));
+          if (preview.dataset.project) saveGridPreviewState(preview.dataset.project, preview);
         };
 
         window.addEventListener('mousemove', onMove);
@@ -882,12 +1082,24 @@
           rowSpan = Math.max(minRows, randomSize.rowSpan);
         }
 
+        const savedGridState = getGridPreviewState(project);
+        if (savedGridState) {
+          colSpan = parseInt(savedGridState.colSpan || colSpan, 10);
+          rowSpan = parseInt(savedGridState.rowSpan || rowSpan, 10);
+        }
+
         preview.dataset.colSpan = String(colSpan);
         preview.dataset.rowSpan = String(rowSpan);
 
-        // Auto-placement: no explicit starts so the grid places where it fits
-        preview.style.gridColumn = `span ${colSpan}`;
-        preview.style.gridRow = `span ${rowSpan}`;
+        if (savedGridState && savedGridState.colStart && savedGridState.rowStart) {
+          preview.dataset.colStart = savedGridState.colStart;
+          preview.dataset.rowStart = savedGridState.rowStart;
+          preview.style.gridColumn = `${savedGridState.colStart} / span ${colSpan}`;
+          preview.style.gridRow = `${savedGridState.rowStart} / span ${rowSpan}`;
+        } else {
+          preview.style.gridColumn = `span ${colSpan}`;
+          preview.style.gridRow = `span ${rowSpan}`;
+        }
 
         addGridResizer(preview);
         makeGridMovable(preview);
@@ -919,6 +1131,99 @@
       });
     };
 
+
+    const getViewportBoundsForFreePreview = () => {
+      const margin = 20;
+      const headerBottom = 80;
+      const footerTop = window.innerHeight * 0.8 - 10;
+
+      return {
+        margin,
+        minX: margin,
+        minY: headerBottom,
+        maxX: Math.max(margin, window.innerWidth - margin),
+        maxY: Math.max(headerBottom + 260, footerTop)
+      };
+    };
+
+    const getInitialFreePreviewSize = (src) => {
+      const source = (src || '').toLowerCase();
+      const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(source);
+
+      const isWide =
+        source.includes('front') ||
+        source.includes('screen') ||
+        source.includes('screenshot') ||
+        source.includes('landscape') ||
+        source.includes('wide') ||
+        source.includes('holding') ||
+        source.includes('built');
+
+      const isTall =
+        source.includes('portrait') ||
+        source.includes('poster') ||
+        source.includes('vertical');
+
+      const maxWidth = Math.max(260, Math.min(760, window.innerWidth - 40));
+
+      if (isVideo) return { width: Math.min(640, maxWidth), minHeight: 360 };
+      if (isWide) return { width: Math.min(720, maxWidth), minHeight: 340 };
+      if (isTall) return { width: Math.min(460, maxWidth), minHeight: 500 };
+
+      return { width: Math.min(560 + Math.round(Math.random() * 120), maxWidth), minHeight: 360 };
+    };
+
+    const constrainFreePreviewToViewport = (preview) => {
+      if (gridMode || isMobileView()) return;
+
+      const bounds = getViewportBoundsForFreePreview();
+      const rect = preview.getBoundingClientRect();
+
+      let left = preview.offsetLeft;
+      let top = preview.offsetTop;
+
+      const width = rect.width || parseFloat(preview.style.width) || 600;
+      const height = rect.height || 360;
+
+      const maxLeft = Math.max(bounds.minX, bounds.maxX - width);
+      const maxTop = Math.max(bounds.minY, bounds.maxY - height);
+
+      left = Math.max(bounds.minX, Math.min(left, maxLeft));
+      top = Math.max(bounds.minY, Math.min(top, maxTop));
+
+      preview.style.left = `${left}px`;
+      preview.style.top = `${top}px`;
+      preview.style.transform = 'none';
+    };
+
+    const placeFreePreviewRandomly = (project, preview, data) => {
+      if (gridMode || isMobileView()) return;
+
+      const remembered = applyFreePreviewState(project, preview);
+      if (remembered) {
+        constrainFreePreviewToViewport(preview);
+        return;
+      }
+
+      const size = getInitialFreePreviewSize(data.image);
+      const bounds = getViewportBoundsForFreePreview();
+
+      preview.style.width = `${size.width}px`;
+      preview.style.minHeight = `${size.minHeight}px`;
+      preview.style.height = 'auto';
+      preview.style.transform = 'none';
+
+      const approxHeight = Math.min(Math.max(size.minHeight, 320), Math.max(320, bounds.maxY - bounds.minY));
+      const maxLeft = Math.max(bounds.minX, bounds.maxX - size.width);
+      const maxTop = Math.max(bounds.minY, bounds.maxY - approxHeight);
+
+      const left = bounds.minX + Math.round(Math.random() * Math.max(0, maxLeft - bounds.minX));
+      const top = bounds.minY + Math.round(Math.random() * Math.max(0, maxTop - bounds.minY));
+
+      preview.style.left = `${left}px`;
+      preview.style.top = `${top}px`;
+    };
+
     const createPreviewContainer = (project) => {
       const data = projectData[project] || { image: '', blurb: 'DETAILS COMING SOON.' };
 
@@ -938,6 +1243,7 @@
 
       const preview = document.createElement('div');
       preview.className = 'preview';
+      preview.dataset.project = project;
       preview.style.top = '50%';
       preview.style.left = '50%';
       preview.style.transform = 'translate(-50%, -50%)';
@@ -953,11 +1259,15 @@
 
       const mediaWrap = preview.querySelector('.preview-image-wrapper');
       mediaWrap.appendChild(createMediaEl(data.image, `${project} Media`));
-
-      preview.querySelector('.close-button').addEventListener('click', () => {
+preview.querySelector('.close-button').addEventListener('click', () => {
         if (preview._ro) { try { preview._ro.disconnect(); } catch(e){} delete preview._ro; }
+        if (preview._freeRO) { try { preview._freeRO.disconnect(); } catch(e){} delete preview._freeRO; }
         preview.remove();
         delete openPreviews[project];
+        const activeItemToRemove = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
+        if (activeItemToRemove) activeItemToRemove.classList.remove('is-active');
+        const activeItem = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
+        if (activeItem) activeItem.classList.remove('is-active');
       });
 
       makeDraggable(preview);
@@ -985,10 +1295,24 @@
           rowSpan = Math.max(minRows, randomSize.rowSpan);
         }
 
+        const savedGridState = getGridPreviewState(project);
+        if (savedGridState) {
+          colSpan = parseInt(savedGridState.colSpan || colSpan, 10);
+          rowSpan = parseInt(savedGridState.rowSpan || rowSpan, 10);
+        }
+
         preview.dataset.colSpan = String(colSpan);
         preview.dataset.rowSpan = String(rowSpan);
-        preview.style.gridColumn = `span ${colSpan}`;
-        preview.style.gridRow = `span ${rowSpan}`;
+
+        if (savedGridState && savedGridState.colStart && savedGridState.rowStart) {
+          preview.dataset.colStart = savedGridState.colStart;
+          preview.dataset.rowStart = savedGridState.rowStart;
+          preview.style.gridColumn = `${savedGridState.colStart} / span ${colSpan}`;
+          preview.style.gridRow = `${savedGridState.rowStart} / span ${rowSpan}`;
+        } else {
+          preview.style.gridColumn = `span ${colSpan}`;
+          preview.style.gridRow = `span ${rowSpan}`;
+        }
 
         addGridResizer(preview);
         makeGridMovable(preview);
@@ -1002,12 +1326,103 @@
         });
       } else {
         document.body.appendChild(preview);
+        placeFreePreviewRandomly(project, preview, data);
+
+        if (window.ResizeObserver) {
+          const freeRO = new ResizeObserver(() => {
+            constrainFreePreviewToViewport(preview);
+            saveFreePreviewState(project, preview);
+          });
+          freeRO.observe(preview);
+          preview._freeRO = freeRO;
+        }
       }
 
       openPreviews[project] = preview;
+      const activeItem = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
+      if (activeItem) activeItem.classList.add('is-active');
+};
+
+
+
+    const closeAllPreviews = () => {
+      Object.keys(openPreviews).forEach((project) => {
+        const preview = openPreviews[project];
+        if (!preview) return;
+
+        if (preview._ro) {
+          try { preview._ro.disconnect(); } catch(e) {}
+          delete preview._ro;
+        }
+
+        if (preview._freeRO) {
+          try { preview._freeRO.disconnect(); } catch(e) {}
+          delete preview._freeRO;
+        }
+
+        preview.remove();
+        delete openPreviews[project];
+      });
+
+      document.querySelectorAll('#projectList li.is-active').forEach((item) => {
+        item.classList.remove('is-active');
+      });
     };
 
-    // Bind project clicks
+    const updateProjectMenuHeading = () => {
+      const list = document.getElementById('projectList');
+      const heading = document.getElementById('projectMenuHeading');
+      if (!list || !heading) return;
+
+      if (list.scrollTop < 4) {
+        heading.textContent = 'PROJECTS';
+        return;
+      }
+
+      const items = Array.from(list.querySelectorAll('li[data-project]'));
+      if (!items.length) {
+        heading.textContent = 'PROJECTS';
+        return;
+      }
+
+      const listTop = list.getBoundingClientRect().top;
+      let active = items[0];
+
+      for (const item of items) {
+        const rect = item.getBoundingClientRect();
+        if (rect.top <= listTop + 10) {
+          active = item;
+        } else {
+          break;
+        }
+      }
+
+      heading.textContent = (active.dataset.category || 'PROJECTS').toUpperCase();
+    };
+
+    const initialiseMenuControls = () => {
+      const closeAllBtn = document.getElementById('closeAllBtn');
+      const projectListEl = document.getElementById('projectList');
+
+      if (closeAllBtn) {
+        closeAllBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeAllPreviews();
+        };
+      }
+
+      if (projectListEl) {
+        projectListEl.addEventListener('scroll', updateProjectMenuHeading, { passive: true });
+        projectListEl.addEventListener('wheel', () => requestAnimationFrame(updateProjectMenuHeading), { passive: true });
+        projectListEl.addEventListener('touchmove', () => requestAnimationFrame(updateProjectMenuHeading), { passive: true });
+        requestAnimationFrame(updateProjectMenuHeading);
+      }
+    };
+
+    initialiseMenuControls();
+
+// Bind project clicks
     document.querySelectorAll('#projectList li[data-project]').forEach((item) => {
       item.addEventListener('click', () => {
         const project = item.getAttribute('data-project');
@@ -1017,7 +1432,11 @@
 
     // Refit on resize in grid
     window.addEventListener('resize', () => {
-      if (!gridMode) return;
+      if (!gridMode) {
+        Object.values(openPreviews).forEach(p => constrainFreePreviewToViewport(p));
+        return;
+      }
+
       const { effRow } = getGridMetrics();
       const minRows = Math.max(1, Math.ceil(350 / effRow));
       Object.values(openPreviews).forEach(p => autoSizeRowSpan(p, minRows));
