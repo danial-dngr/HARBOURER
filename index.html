@@ -587,34 +587,35 @@
     }
 
 
-    /* === Mobile scroll reinforcement === */
-    @media (max-width: 800px) {
-      .mobile-stack-container {
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        touch-action: pan-y;
-      }
-
-      .mobile-stack-container .preview {
-        overflow: visible !important;
-        touch-action: pan-y;
-      }
-
-      .mobile-stack-container .preview-blurb,
-      .mobile-stack-container .preview-image-wrapper {
-        touch-action: pan-y;
-      }
-    }
-
-
     /* === Desktop non-grid internal scroll preservation === */
     @media (min-width: 801px) {
       .preview:not(.in-grid) {
         overflow-x: hidden !important;
         overflow-y: auto !important;
         overscroll-behavior: contain;
+      }
+    }
+
+
+    /* === Mobile preview text scroll fix === */
+    @media (max-width: 800px) {
+      .mobile-stack-container {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .mobile-stack-container .preview {
+        min-height: 50vh !important;
+        max-height: calc(100vh - 58px - 26vh - 8px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+      }
+
+      .mobile-stack-container .preview-blurb {
+        padding-bottom: 24px;
       }
     }
 
