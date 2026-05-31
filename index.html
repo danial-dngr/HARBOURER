@@ -1,1911 +1,1590 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DNGR GOODS</title>
-
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script type="module" src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"></script>
-
-    <style>
-        :root {
-            --bg-primary: white;
-            --bg-secondary: #FDFD96;
-            --text-primary: black;
-            --text-secondary: #333;
-            --border-color: #ddd;
-            --shadow-color: rgba(0, 0, 0, 0.2);
-            --hover-color: #0066cc;
-
-            /* DOS/brutalist scrollbar colors */
-            --scrollbar-thumb: #888;
-            --scrollbar-track: #111;
-
-            /* Swiss grid */
-            --swiss-columns: 12;
-            --swiss-gap: 2px;
-            --swiss-row: 12px;
-            /* baseline row height */
-
-            /* Bottom menu columns (sync with info bar) */
-            --menu-cols: 5;
-
-            /* Overlap in grid mode (~15px) */
-            --overlap-offset: 0px;
-        }
-
-        @media (max-width: 800px) {
-            :root {
-                --menu-cols: 2;
-            }
-        }
-
-        body.dark-mode {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2a2a2a;
-            --text-primary: #f0f0f0;
-            --text-secondary: #c0c0c0;
-            --border-color: #444;
-            --shadow-color: rgba(255, 255, 255, 0.1);
-            --hover-color: #66b3ff;
-
-            --scrollbar-thumb: #c0c0c0;
-            --scrollbar-track: #111;
-        }
-
-        @font-face {
-            font-family: "Neue Montreal Mono";
-            src: url("path-to-neue-montreal-mono.woff2") format("woff2");
-            font-display: swap;
-        }
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-
-        .content ul,
-        .grid-container,
-        .preview {
-            scrollbar-width: thin;
-            scrollbar-color: transparent transparent;
-        }
-
-
-        body {
-            overflow-x: hidden;
-            /* prevent side scroll */
-            overflow-y: hidden;
-            background: var(--bg-primary);
-            font-family: "Neue Montreal Mono", monospace;
-            color: var(--text-primary);
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        /* === DOS / Brutalist scrollbars === */
-        * {
-            scrollbar-width: thin;
-            /* Firefox */
-            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-        }
-
-        .content ul::-webkit-scrollbar,
-        .grid-container::-webkit-scrollbar,
-        .preview::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-            background: transparent;
-        }
-
-        .content ul::-webkit-scrollbar-thumb,
-        .grid-container::-webkit-scrollbar-thumb,
-        .preview::-webkit-scrollbar-thumb {
-            background: transparent;
-            border: none;
-        }
-
-        .content ul::-webkit-scrollbar-track,
-        .grid-container::-webkit-scrollbar-track,
-        .preview::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .branding {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: clamp(16px, 2vw, 28px);
-            z-index: 100;
-            color: var(--text-primary);
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .branding-text {
-            line-height: 1;
-        }
-
-        .control-buttons {
-            display: flex;
-            gap: 8px;
-            margin-left: 20px;
-        }
-
-        .control-button {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            cursor: pointer;
-            padding: 8px 12px;
-            font-family: inherit;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            border-radius: 4px;
-        }
-
-        .control-button:hover {
-            border-color: var(--text-primary);
-            background: var(--text-primary);
-            color: var(--bg-primary);
-        }
-
-        /* === Bottom Projects Menu (fixed & on top) === */
-        .content {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: 20vh;
-            z-index: 10000;
-            /* stay above everything */
-            border-top: 1px solid var(--border-color);
-            padding: 10px 10px 8px 10px;
-            background: var(--bg-secondary);
-            overflow: hidden;
-            /* inner elements manage scroll */
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            /* title | list | info bar */
-            box-sizing: border-box;
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-
-        .content h4 {
-            font-weight: 400;
-            font-size: clamp(14px, 1.4vw, 18px);
-            margin: 0 0 6px 0;
-            color: var(--text-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            line-height: 1;
-        }
-
-        .content ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: clamp(14px, 1.4vw, 18px);
-            display: grid;
-            grid-template-columns: repeat(var(--menu-cols), 1fr);
-            gap: 0;
-            row-gap: clamp(0.5px, 0.3vw, 3px);
-            overflow-y: auto;
-            overflow-x: hidden;
-            /* vertical only */
-            line-height: 1;
-        }
-
-        .content ul li {
-            cursor: pointer;
-            margin: 0;
-            color: var(--text-primary);
-            font-weight: 400;
-            padding-right: clamp(6px, 1vw, 12px);
-            border-right: 1px solid var(--border-color);
-            text-transform: uppercase;
-            line-height: 1;
-            padding-bottom: clamp(0.5px, 0.3vw, 2px);
-            transition: color 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .content ul li:last-child {
-            border-right: none;
-        }
-
-        .content ul li:hover {
-            color: var(--hover-color);
-        }
-
-        .content ul li span {
-            font-weight: 700;
-            font-size: clamp(10px, 1vw, 11px);
-            margin-right: clamp(3px, 0.5vw, 6px);
-            color: var(--text-primary);
-        }
-
-        /* Info bar moved into menu as single line */
-        .info-bar {
-            display: grid;
-            grid-template-columns: repeat(var(--menu-cols), 1fr);
-            column-gap: 0;
-            font-size: clamp(10px, 1.1vw, 12px);
-            color: var(--text-primary);
-            margin-top: 6px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 6px;
-            white-space: nowrap;
-            align-items: center;
-        }
-
-        .info-cell {
-            padding-right: clamp(6px, 1vw, 12px);
-            border-right: 1px solid var(--border-color);
-            text-transform: uppercase;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .info-cell:last-child {
-            border-right: none;
-        }
-
-        .info-cell a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .info-cell a:hover {
-            text-decoration: underline;
-        }
-
-        /* Original footer is hidden to avoid duplication */
-        .footer {
-            display: none;
-        }
-
-        .lottie-wrapper {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 6;
-            width: clamp(40px, 8vw, 80px);
-            height: clamp(40px, 8vw, 80px);
-            pointer-events: none;
-        }
-
-        .lottie-wrapper dotlottie-player {
-            width: 100%;
-            height: 100%;
-            background: transparent !important;
-        }
-
-        /* === Grid Area === */
-        .grid-container {
-            position: fixed;
-            top: 80px;
-            left: 20px;
-            right: 20px;
-            bottom: calc(20vh + 10px);
-            z-index: 15;
-            display: none;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            grid-auto-rows: minmax(200px, auto);
-            gap: var(--swiss-gap);
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 10px;
-        }
-
-        .grid-container.active {
-            display: grid;
-            grid-template-columns: repeat(var(--swiss-columns), 1fr);
-            grid-auto-rows: var(--swiss-row);
-            grid-auto-flow: dense;
-            /* better packing */
-        }
-
-        .grid-container .preview {
-            position: relative !important;
-            transform: none !important;
-            top: auto !important;
-            left: auto !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            min-width: 0 !important;
-            min-height: auto !important;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            padding: 21px;
-            /* 70% of normal 30px preview padding */
-            resize: none;
-            /* disabled in grid */
-            z-index: auto;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        /* === Preview windows === */
-        .preview {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 20;
-            width: 600px;
-            min-width: 200px;
-            height: auto;
-            min-height: 300px;
-            border: none;
-            padding: 30px;
-            background: var(--bg-primary);
-            overflow-x: hidden;
-            overflow-y: auto;
-            /* vertical scroll shows DOS scrollbar */
-            resize: both;
-            cursor: default;
-            box-shadow: 0 4px 20px var(--shadow-color);
-            transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .close-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px 10px;
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.2s;
-            z-index: 30;
-            pointer-events: auto;
-        }
-
-        .close-button:hover {
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        .close-button::before {
-            content: "×";
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        /* Title ABOVE image (as you liked) */
-        .preview-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin: 0 0 12px 0;
-            color: var(--text-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-        }
-
-        .preview-image-wrapper {
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 14px;
-            overflow: hidden;
-        }
-
-        .preview-image-wrapper img,
-        .preview-image-wrapper video {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            display: block;
-            border: none;
-        }
-
-        .preview-blurb {
-            font-size: 11px;
-            line-height: 1.4;
-            color: var(--text-secondary);
-            text-align: justify;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            overflow-wrap: break-word;
-        }
-
-        .preview-blurb img {
-            float: left;
-            margin: 0 12px 8px 0;
-            border: 1px solid var(--border-color);
-            height: 45px;
-            width: auto;
-            object-fit: cover;
-        }
-
-        .preview-blurb img:nth-of-type(2) {
-            float: right;
-            margin: 0 0 8px 12px;
-        }
-
-        .three-container {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-            display: none;
-        }
-
-        /* Grid mode UI */
-        .preview .grid-resize {
-            display: none;
-        }
-
-        .preview.in-grid .grid-resize {
-            display: block;
-            position: absolute;
-            right: 6px;
-            bottom: 6px;
-            width: 16px;
-            height: 16px;
-            cursor: nwse-resize;
-            z-index: 40;
-            opacity: 0.75;
-            background:
-                linear-gradient(135deg, transparent 50%, var(--border-color) 50%) no-repeat,
-                linear-gradient(135deg, transparent 40%, var(--text-secondary) 40%) no-repeat;
-            background-size: 100% 100%, 6px 6px;
-        }
-
-        .preview.in-grid .grid-resize:hover {
-            opacity: 1;
-        }
-
-        .preview.in-grid {
-            cursor: move;
-        }
-
-        .preview.in-grid.dragging {
-            opacity: 0.92;
-            box-shadow: 0 6px 18px var(--shadow-color);
-        }
-
-        /* === Mobile preview behaviour === */
-        @media (max-width: 800px) {
-
-            .content ul,
-            .grid-container,
-            .preview {
-                scrollbar-width: thin;
-                scrollbar-color: transparent transparent;
-            }
-
-
-            body {
-                overflow-x: hidden;
-                overflow-y: hidden;
-            }
-
-            .branding {
-                top: 0;
-                left: 0;
-                right: 0;
-                min-height: 58px;
-                padding: 10px 12px;
-                background: var(--bg-primary);
-                border-bottom: 1px solid var(--border-color);
-                z-index: 10001;
-            }
-
-            .branding-text {
-                font-size: 18px;
-            }
-
-            .control-buttons {
-                margin-left: auto;
-            }
-
-            .control-button {
-                padding: 8px 10px;
-                font-size: 14px;
-            }
-
-            .content {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 26vh;
-                min-height: 155px;
-                max-height: 230px;
-                z-index: 10000;
-            }
-
-            .grid-container {
-                top: 68px;
-                left: 0;
-                right: 0;
-                bottom: calc(26vh + 4px);
-                padding: 2px;
-                gap: 2px;
-            }
-
-            .grid-container.active {
-                grid-template-columns: repeat(6, 1fr);
-                grid-auto-rows: 10px;
-            }
-
-            .grid-container .preview {
-                min-height: 50vh !important;
-                max-height: calc(100vh - 68px - 26vh - 8px) !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 14px;
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-
-            .preview {
-                position: fixed !important;
-                top: 68px !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: calc(26vh + 4px) !important;
-                width: 100vw !important;
-                max-width: 100vw !important;
-                height: auto !important;
-                min-height: 50vh !important;
-                max-height: calc(100vh - 68px - 26vh - 4px) !important;
-                transform: none !important;
-                padding: 16px;
-                resize: none;
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-
-            .preview-image-wrapper,
-            .preview-image-wrapper img,
-            .preview-image-wrapper video {
-                max-width: 100%;
-            }
-
-            .close-button {
-                top: 12px;
-                right: 12px;
-            }
-
-            .preview-title {
-                padding-right: 42px;
-            }
-        }
-
-
-        /* === Mobile stacked preview mode === */
-        .mobile-stack-container {
-            display: none;
-        }
-
-        @media (max-width: 800px) {
-
-            #gridBtn {
-                display: none;
-            }
-
-            .grid-container {
-                display: none !important;
-            }
-
-            .mobile-stack-container {
-                display: block;
-                position: fixed;
-                top: 58px;
-                left: 0;
-                right: 0;
-                bottom: calc(26vh + 4px);
-                overflow-x: hidden;
-                overflow-y: auto;
-                padding: 2px;
-                z-index: 20;
-                background: var(--bg-primary);
-            }
-
-            .mobile-stack-container .preview {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                right: auto !important;
-                bottom: auto !important;
-                transform: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                min-height: 50vh !important;
-                height: auto !important;
-                margin-bottom: 2px;
-                resize: none !important;
-            }
-        }
-
-
-
-        /* === Dynamic project heading + close all === */
-        .menu-heading-row {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            gap: 12px;
-            margin: 0 0 6px 0;
-        }
-
-        .menu-heading-row h4 {
-            font-weight: 400;
-            font-size: clamp(14px, 1.4vw, 18px);
-            margin: 0;
-            color: var(--text-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            line-height: 1;
-        }
-
-        .close-all-button {
-            appearance: none;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-weight: 400;
-            font-size: clamp(14px, 1.4vw, 18px);
-            line-height: 1;
-            padding: 0;
-            margin: 0;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: right;
-        }
-
-        .close-all-button:hover {
-            color: var(--hover-color);
-            background: transparent;
-        }
-
-        #projectList li.is-active {
-            color: var(--hover-color);
-        }
-
-        .content ul {
-            line-height: 1.08;
-            row-gap: clamp(1px, 0.28vw, 4px);
-        }
-
-
-        /* === Minor UI refinements === */
-        .content ul li:hover {
-            color: var(--text-secondary) !important;
-        }
-
-        .close-all-button {
-            position: relative;
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            margin: -5px 0 0 0;
-            border: 1px solid var(--border-color) !important;
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 0;
-            line-height: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .close-all-button::before {
-            content: "×";
-            font-weight: bold;
-            font-size: 20px;
-            line-height: 1;
-        }
-
-        .close-all-button:hover {
-            color: var(--text-primary) !important;
-            border-color: var(--text-primary) !important;
-            background: transparent !important;
-        }
-
-        .menu-heading-row {
-            align-items: start;
-        }
-
-
-        /* === Non-grid scrolling fix === */
-        .preview:not(.in-grid) {
-            max-height: calc(80vh - 100px);
-            overflow-x: hidden !important;
-            overflow-y: auto !important;
-            overscroll-behavior: contain;
-        }
-
-        .preview:not(.in-grid) .preview-title {
-            cursor: grab;
-            user-select: none;
-        }
-
-        .preview:not(.in-grid) .preview-title:active {
-            cursor: grabbing;
-        }
-
-        .preview-blurb,
-        .preview-image-wrapper,
-        .preview-image-wrapper img,
-        .preview-image-wrapper video {
-            touch-action: pan-y;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DNGR GOODS</title>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script type="module" src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"></script>
+
+  <style>
+    :root {
+      --bg-primary: white;
+      --bg-secondary: #FDFD96;
+      --text-primary: black;
+      --text-secondary: #333;
+      --border-color: #ddd;
+      --shadow-color: rgba(0,0,0,0.2);
+      --hover-color: #0066cc;
+
+      /* DOS/brutalist scrollbar colors */
+      --scrollbar-thumb: #888;
+      --scrollbar-track: #111;
+
+      /* Swiss grid */
+      --swiss-columns: 12;
+      --swiss-gap: 2px;
+      --swiss-row: 12px; /* baseline row height */
+
+      /* Bottom menu columns (sync with info bar) */
+      --menu-cols: 5;
+
+      /* Overlap in grid mode (~15px) */
+      --overlap-offset: 0px;
+    }
+
+    @media (max-width: 800px) {
+      :root { --menu-cols: 2; }
+    }
+
+    body.dark-mode {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2a2a2a;
+      --text-primary: #f0f0f0;
+      --text-secondary: #c0c0c0;
+      --border-color: #444;
+      --shadow-color: rgba(255,255,255,0.1);
+      --hover-color: #66b3ff;
+
+      --scrollbar-thumb: #c0c0c0;
+      --scrollbar-track: #111;
+    }
+
+    @font-face {
+      font-family: "Neue Montreal Mono";
+      src: url("path-to-neue-montreal-mono.woff2") format("woff2");
+      font-display: swap;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+    }
+
+
+    .content ul,
+    .grid-container,
+    .preview {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+
+
+    body {
+      overflow-x: hidden; /* prevent side scroll */
+      overflow-y: hidden;
+      background: var(--bg-primary);
+      font-family: "Neue Montreal Mono", monospace;
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* === DOS / Brutalist scrollbars === */
+    * {
+      scrollbar-width: thin; /* Firefox */
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+    .content ul::-webkit-scrollbar,
+    .grid-container::-webkit-scrollbar,
+    .preview::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+      background: transparent;
+    }
+
+    .content ul::-webkit-scrollbar-thumb,
+    .grid-container::-webkit-scrollbar-thumb,
+    .preview::-webkit-scrollbar-thumb {
+      background: transparent;
+      border: none;
+    }
+
+    .content ul::-webkit-scrollbar-track,
+    .grid-container::-webkit-scrollbar-track,
+    .preview::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .branding {
+      position: fixed; top: 20px; left: 20px;
+      font-size: clamp(16px, 2vw, 28px);
+      z-index: 100;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .branding-text { line-height: 1; }
+
+    .control-buttons { display: flex; gap: 8px; margin-left: 20px; }
+    .control-button {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 16px;
+      transition: all 0.2s ease;
+      border-radius: 4px;
+    }
+    .control-button:hover {
+      border-color: var(--text-primary);
+      background: var(--text-primary);
+      color: var(--bg-primary);
+    }
+
+    /* === Bottom Projects Menu (fixed & on top) === */
+    .content {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      width: 100%; height: 20vh;
+      z-index: 10000; /* stay above everything */
+      border-top: 1px solid var(--border-color);
+      padding: 10px 10px 8px 10px;
+      background: var(--bg-secondary);
+      overflow: hidden; /* inner elements manage scroll */
+      display: grid; grid-template-rows: auto 1fr auto; /* title | list | info bar */
+      box-sizing: border-box;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .content h4 {
+      font-weight: 400; font-size: clamp(14px, 1.4vw, 18px);
+      margin: 0 0 6px 0; color: var(--text-primary);
+      text-transform: uppercase; letter-spacing: 0.5px; line-height: 1;
+    }
+    .content ul {
+      list-style: none; padding: 0; margin: 0;
+      font-size: clamp(14px, 1.4vw, 18px);
+      display: grid; grid-template-columns: repeat(var(--menu-cols), 1fr);
+      gap: 0; row-gap: clamp(0.5px, 0.3vw, 3px);
+      overflow-y: auto; overflow-x: hidden; /* vertical only */
+      line-height: 1;
+    }
+    .content ul li {
+      cursor: pointer; margin: 0; color: var(--text-primary); font-weight: 400;
+      padding-right: clamp(6px, 1vw, 12px); border-right: 1px solid var(--border-color);
+      text-transform: uppercase; line-height: 1;
+      padding-bottom: clamp(0.5px, 0.3vw, 2px);
+      transition: color 0.2s ease; white-space: nowrap;
+    }
+    .content ul li:last-child { border-right: none; }
+    .content ul li:hover { color: var(--hover-color); }
+    .content ul li span {
+      font-weight: 700; font-size: clamp(10px, 1vw, 11px);
+      margin-right: clamp(3px, 0.5vw, 6px); color: var(--text-primary);
+    }
+
+    /* Info bar moved into menu as single line */
+    .info-bar {
+      display: grid; grid-template-columns: repeat(var(--menu-cols), 1fr);
+      column-gap: 0;
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: var(--text-primary);
+      margin-top: 6px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 6px;
+      white-space: nowrap;
+      align-items: center;
+    }
+    .info-cell {
+      padding-right: clamp(6px, 1vw, 12px);
+      border-right: 1px solid var(--border-color);
+      text-transform: uppercase;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .info-cell:last-child { border-right: none; }
+    .info-cell a { color: inherit; text-decoration: none; }
+    .info-cell a:hover { text-decoration: underline; }
+
+    /* Original footer is hidden to avoid duplication */
+    .footer { display: none; }
+
+    .lottie-wrapper {
+      position: fixed; top: 20px; left: 20px;
+      z-index: 6; width: clamp(40px, 8vw, 80px); height: clamp(40px, 8vw, 80px);
+      pointer-events: none;
+    }
+    .lottie-wrapper dotlottie-player {
+      width: 100%; height: 100%; background: transparent !important;
+    }
+
+    /* === Grid Area === */
+    .grid-container {
+      position: fixed;
+      top: 80px; left: 20px; right: 20px; bottom: calc(20vh + 10px);
+      z-index: 15;
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-auto-rows: minmax(200px, auto);
+      gap: var(--swiss-gap);
+      overflow-y: auto; overflow-x: hidden;
+      padding: 10px;
+    }
+    .grid-container.active {
+      display: grid;
+      grid-template-columns: repeat(var(--swiss-columns), 1fr);
+      grid-auto-rows: var(--swiss-row);
+      grid-auto-flow: dense; /* better packing */
+    }
+
+    .grid-container .preview {
+      position: relative !important;
+      transform: none !important;
+      top: auto !important; left: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-width: 0 !important;
+      min-height: auto !important;
+      box-shadow: 0 2px 10px var(--shadow-color);
+      padding: 21px; /* 70% of normal 30px preview padding */
+      resize: none; /* disabled in grid */
+      z-index: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* === Preview windows === */
+    .preview {
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 20;
+      width: 600px; min-width: 200px;
+      height: auto; min-height: 300px;
+      border: none; padding: 30px;
+      background: var(--bg-primary);
+      overflow-x: hidden; overflow-y: auto; /* vertical scroll shows DOS scrollbar */
+      resize: both; cursor: default;
+      box-shadow: 0 4px 20px var(--shadow-color);
+      transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .close-button {
+      position: absolute; top: 20px; right: 20px;
+      padding: 5px 10px; background: transparent;
+      color: var(--text-secondary); border: 1px solid var(--border-color);
+      cursor: pointer; font-size: 14px; font-family: inherit;
+      transition: all 0.2s; z-index: 30; pointer-events: auto;
+    }
+    .close-button:hover { color: var(--text-primary); border-color: var(--text-primary); }
+    .close-button::before { content: "×"; font-weight: bold; font-size: 20px; }
+
+    /* Title ABOVE image (as you liked) */
+    .preview-title {
+      font-size: 16px; font-weight: 700;
+      margin: 0 0 12px 0; color: var(--text-primary);
+      text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;
+    }
+
+    .preview-image-wrapper { width: 100%; max-width: 100%; margin-bottom: 14px; overflow: hidden; }
+    .preview-image-wrapper img, .preview-image-wrapper video {
+      width: 100%; max-width: 100%; height: auto; display: block; border: none;
+    }
+
+    .preview-blurb {
+      font-size: 11px; line-height: 1.4; color: var(--text-secondary);
+      text-align: justify; margin: 0; text-transform: uppercase; letter-spacing: 0.3px;
+      overflow-wrap: break-word;
+    }
+
+    .preview-blurb img {
+      float: left; margin: 0 12px 8px 0; border: 1px solid var(--border-color);
+      height: 45px; width: auto; object-fit: cover;
+    }
+    .preview-blurb img:nth-of-type(2) { float: right; margin: 0 0 8px 12px; }
+
+    .three-container { position: fixed; inset: 0; pointer-events: none; z-index: 1; display: none; }
+
+    /* Grid mode UI */
+    .preview .grid-resize { display: none; }
+    .preview.in-grid .grid-resize {
+      display: block; position: absolute; right: 6px; bottom: 6px;
+      width: 16px; height: 16px; cursor: nwse-resize; z-index: 40; opacity: 0.75;
+      background:
+        linear-gradient(135deg, transparent 50%, var(--border-color) 50%) no-repeat,
+        linear-gradient(135deg, transparent 40%, var(--text-secondary) 40%) no-repeat;
+      background-size: 100% 100%, 6px 6px;
+    }
+    .preview.in-grid .grid-resize:hover { opacity: 1; }
+    .preview.in-grid { cursor: move; }
+    .preview.in-grid.dragging { opacity: 0.92; box-shadow: 0 6px 18px var(--shadow-color); }
+
+    /* === Mobile preview behaviour === */
+    @media (max-width: 800px) {
+  
+    .content ul,
+    .grid-container,
+    .preview {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+
+
+    body {
+        overflow-x: hidden;
+        overflow-y: hidden;
+      }
+
+      .branding {
+        top: 0;
+        left: 0;
+        right: 0;
+        min-height: 58px;
+        padding: 10px 12px;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border-color);
+        z-index: 10001;
+      }
+
+      .branding-text {
+        font-size: 18px;
+      }
+
+      .control-buttons {
+        margin-left: auto;
+      }
+
+      .control-button {
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+
+      .content {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 26vh;
+        min-height: 155px;
+        max-height: 230px;
+        z-index: 10000;
+      }
+
+      .grid-container {
+        top: 68px;
+        left: 0;
+        right: 0;
+        bottom: calc(26vh + 4px);
+        padding: 2px;
+        gap: 2px;
+      }
+
+      .grid-container.active {
+        grid-template-columns: repeat(6, 1fr);
+        grid-auto-rows: 10px;
+      }
+
+      .grid-container .preview {
+        min-height: 50vh !important;
+        max-height: calc(100vh - 68px - 26vh - 8px) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 14px;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .preview {
+        position: fixed !important;
+        top: 68px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: calc(26vh + 4px) !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: auto !important;
+        min-height: 50vh !important;
+        max-height: calc(100vh - 68px - 26vh - 4px) !important;
+        transform: none !important;
+        padding: 16px;
+        resize: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .preview-image-wrapper,
+      .preview-image-wrapper img,
+      .preview-image-wrapper video {
+        max-width: 100%;
+      }
+
+      .close-button {
+        top: 12px;
+        right: 12px;
+      }
+
+      .preview-title {
+        padding-right: 42px;
+      }
+    }
+
+  
+    /* === Mobile stacked preview mode === */
+    .mobile-stack-container {
+      display: none;
+    }
+
+    @media (max-width: 800px) {
+
+      #gridBtn {
+        display: none;
+      }
+
+      .grid-container {
+        display: none !important;
+      }
+
+      .mobile-stack-container {
+        display: block;
+        position: fixed;
+        top: 58px;
+        left: 0;
+        right: 0;
+        bottom: calc(26vh + 4px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 2px;
+        z-index: 20;
+        background: var(--bg-primary);
+      }
+
+      .mobile-stack-container .preview {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 50vh !important;
+        height: auto !important;
+        margin-bottom: 2px;
+        resize: none !important;
+      }
+    }
+
+
+
+    /* === Dynamic project heading + close all === */
+    .menu-heading-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 6px 0;
+    }
+
+    .menu-heading-row h4 {
+      font-weight: 400;
+      font-size: clamp(14px, 1.4vw, 18px);
+      margin: 0;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    .close-all-button {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-weight: 400;
+      font-size: clamp(14px, 1.4vw, 18px);
+      line-height: 1;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: right;
+    }
+
+    .close-all-button:hover {
+      color: var(--hover-color);
+      background: transparent;
+    }
+
+    #projectList li.is-active {
+      color: var(--hover-color);
+    }
+
+    .content ul {
+      line-height: 1.08;
+      row-gap: clamp(1px, 0.28vw, 4px);
+    }
+
+
+    /* === Minor UI refinements === */
+    .content ul li:hover {
+      color: var(--text-secondary) !important;
+    }
+
+    .close-all-button {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      margin: -5px 0 0 0;
+      border: 1px solid var(--border-color) !important;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .close-all-button::before {
+      content: "×";
+      font-weight: bold;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .close-all-button:hover {
+      color: var(--text-primary) !important;
+      border-color: var(--text-primary) !important;
+      background: transparent !important;
+    }
+
+    .menu-heading-row {
+      align-items: start;
+    }
+
+
+    /* === Non-grid scrolling fix === */
+    .preview:not(.in-grid) {
+      max-height: calc(80vh - 100px);
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+    }
+
+    .preview:not(.in-grid) .preview-title {
+      cursor: grab;
+      user-select: none;
+    }
+
+    .preview:not(.in-grid) .preview-title:active {
+      cursor: grabbing;
+    }
+
+    .preview-blurb,
+    .preview-image-wrapper,
+    .preview-image-wrapper img,
+    .preview-image-wrapper video {
+      touch-action: pan-y;
+    }
+
+
+    /* === Mobile scroll reinforcement === */
+    @media (max-width: 800px) {
+      .mobile-stack-container {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+      }
+
+      .mobile-stack-container .preview {
+        overflow: visible !important;
+        touch-action: pan-y;
+      }
+
+      .mobile-stack-container .preview-blurb,
+      .mobile-stack-container .preview-image-wrapper {
+        touch-action: pan-y;
+      }
+    }
+
+
+    /* === Desktop non-grid internal scroll preservation === */
+    @media (min-width: 801px) {
+      .preview:not(.in-grid) {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+      }
+    }
+
+</style>
 </head>
-
 <body>
-    <div class="lottie-wrapper" aria-hidden="true">
-        <dotlottie-player src="https://lottie.host/d78de815-63f5-4083-8b23-d3833bcfd65f/1aTwDaznYJ.lottie" background="transparent" speed="0.5" loop autoplay>
-        </dotlottie-player>
+  <div class="lottie-wrapper" aria-hidden="true">
+    <dotlottie-player
+      src="https://lottie.host/d78de815-63f5-4083-8b23-d3833bcfd65f/1aTwDaznYJ.lottie"
+      background="transparent"
+      speed="0.5"
+      loop
+      autoplay>
+    </dotlottie-player>
+  </div>
+
+  <div class="branding">
+    <div class="branding-text" aria-label="DNGR GOODS">DNGR GOODS</div>
+    <div class="control-buttons">
+      <button class="control-button" id="invertBtn" title="Toggle Dark Mode">☯</button>
+      <button class="control-button" id="gridBtn" title="Toggle Grid Layout">▦</button>
     </div>
+  </div>
 
-    <div class="branding">
-        <div class="branding-text" aria-label="DNGR GOODS">DNGR GOODS</div>
-        <div class="control-buttons">
-            <button class="control-button" id="invertBtn" title="Toggle Dark Mode">☯</button>
-            <button class="control-button" id="gridBtn" title="Toggle Grid Layout">▦</button>
-        </div>
+  <div class="grid-container" id="gridContainer" aria-live="polite"></div>
+
+  <div class="mobile-stack-container" id="mobileStackContainer" aria-live="polite"></div>
+
+  <div class="content">
+    <div class="menu-heading-row">
+      <h4 id="projectMenuHeading">PROJECTS</h4>
+      <button class="close-all-button" id="closeAllBtn" type="button" title="Close all projects" aria-label="Close all projects"></button>
     </div>
+    <ul id="projectList">
+      <li data-project="SOLARIS" data-category="WEB"><span>01</span>SOLARIS</li>
+      <li data-project="GO MAD" data-category="EXPERIMENTAL"><span>02</span>GO MAD</li>
+      <li data-project="LSW" data-category="BRANDING"><span>03</span>LSW</li>
+      <li data-project="VANCE LIVING" data-category="WEB"><span>04</span>VANCE LIVING</li>
+      <li data-project="ABOUT DNGR" data-category="WEB"><span>05</span>ABOUT DNGR</li>
+      <li data-project="NOCTURNAL INGESTIONS" data-category="BRANDING"><span>06</span>NOCTURNAL</li>
+      <li data-project="THAIMESE" data-category="BRANDING"><span>07</span>THAIMESE</li>
+      <li data-project="KINETIC MOTION" data-category="MOTION"><span>08</span>KINETIC MOTION</li>
+      <li data-project="GOM MAKER" data-category="WEB"><span>09</span>GOM MAKER</li>
+      <li data-project="HOLIDAY" data-category="PACKAGING"><span>10</span>HOLIDAY</li>
+      <li data-project="THE TASTY STUFF" data-category="PACKAGING"><span>11</span>THE TASTY STUFF</li>
+      <li data-project="PROJECT TWELVE" data-category="EXPERIMENTAL"><span>12</span>PROJECT TWELVE</li>
+      <li data-project="PROJECT THIRTEEN" data-category="EXPERIMENTAL"><span>13</span>PROJECT THIRTEEN</li>
+      <li data-project="PROJECT FOURTEEN" data-category="EXPERIMENTAL"><span>14</span>PROJECT FOURTEEN</li>
+      <li data-project="PROJECT FIFTEEN" data-category="EXPERIMENTAL"><span>15</span>PROJECT FIFTEEN</li>
+      <li data-project="PROJECT SIXTEEN" data-category="EXPERIMENTAL"><span>16</span>PROJECT SIXTEEN</li>
+      <li data-project="PROJECT SEVENTEEN" data-category="EXPERIMENTAL"><span>17</span>PROJECT SEVENTEEN</li>
+      <li data-project="PROJECT EIGHTEEN" data-category="EXPERIMENTAL"><span>18</span>PROJECT EIGHTEEN</li>
+      <li data-project="PROJECT NINETEEN" data-category="EXPERIMENTAL"><span>19</span>PROJECT NINETEEN</li>
+      <li data-project="PROJECT TWENTY" data-category="EXPERIMENTAL"><span>20</span>PROJECT TWENTY</li>
+      <li data-project="PROJECT TWENTY-ONE" data-category="EXPERIMENTAL"><span>21</span>PROJECT TWENTY-ONE</li>
+      <li data-project="PROJECT TWENTY-TWO" data-category="EXPERIMENTAL"><span>22</span>PROJECT TWENTY-TWO</li>
+      <li data-project="PROJECT TWENTY-THREE" data-category="EXPERIMENTAL"><span>23</span>PROJECT TWENTY-THREE</li>
+      <li data-project="PROJECT TWENTY-FOUR" data-category="EXPERIMENTAL"><span>24</span>PROJECT TWENTY-FOUR</li>
+      <li data-project="PROJECT TWENTY-FIVE" data-category="EXPERIMENTAL"><span>25</span>PROJECT TWENTY-FIVE</li>
+    </ul>
 
-    <div class="grid-container" id="gridContainer" aria-live="polite"></div>
-
-    <div class="mobile-stack-container" id="mobileStackContainer" aria-live="polite"></div>
-
-    <div class="content">
-        <div class="menu-heading-row">
-            <h4 id="projectMenuHeading">PROJECTS</h4>
-            <button class="close-all-button" id="closeAllBtn" type="button" title="Close all projects" aria-label="Close all projects"></button>
-        </div>
-        <ul id="projectList">
-            <li data-project="SOLARIS" data-category="WEB"><span>01</span>SOLARIS</li>
-            <li data-project="GO MAD" data-category="EXPERIMENTAL"><span>02</span>GO MAD</li>
-            <li data-project="LSW" data-category="BRANDING"><span>03</span>LSW</li>
-            <li data-project="VANCE LIVING" data-category="WEB"><span>04</span>VANCE LIVING</li>
-            <li data-project="ABOUT DNGR" data-category="WEB"><span>05</span>ABOUT DNGR</li>
-            <li data-project="NOCTURNAL INGESTIONS" data-category="BRANDING"><span>06</span>NOCTURNAL</li>
-            <li data-project="THAIMESE" data-category="BRANDING"><span>07</span>THAIMESE</li>
-            <li data-project="KINETIC MOTION" data-category="MOTION"><span>08</span>KINETIC MOTION</li>
-            <li data-project="GOM MAKER" data-category="WEB"><span>09</span>GOM MAKER</li>
-            <li data-project="HOLIDAY" data-category="PACKAGING"><span>10</span>HOLIDAY</li>
-            <li data-project="THE TASTY STUFF" data-category="PACKAGING"><span>11</span>THE TASTY STUFF</li>
-            <li data-project="PROJECT TWELVE" data-category="EXPERIMENTAL"><span>12</span>PROJECT TWELVE</li>
-            <li data-project="PROJECT THIRTEEN" data-category="EXPERIMENTAL"><span>13</span>PROJECT THIRTEEN</li>
-            <li data-project="PROJECT FOURTEEN" data-category="EXPERIMENTAL"><span>14</span>PROJECT FOURTEEN</li>
-            <li data-project="PROJECT FIFTEEN" data-category="EXPERIMENTAL"><span>15</span>PROJECT FIFTEEN</li>
-            <li data-project="PROJECT SIXTEEN" data-category="EXPERIMENTAL"><span>16</span>PROJECT SIXTEEN</li>
-            <li data-project="PROJECT SEVENTEEN" data-category="EXPERIMENTAL"><span>17</span>PROJECT SEVENTEEN</li>
-            <li data-project="PROJECT EIGHTEEN" data-category="EXPERIMENTAL"><span>18</span>PROJECT EIGHTEEN</li>
-            <li data-project="PROJECT NINETEEN" data-category="EXPERIMENTAL"><span>19</span>PROJECT NINETEEN</li>
-            <li data-project="PROJECT TWENTY" data-category="EXPERIMENTAL"><span>20</span>PROJECT TWENTY</li>
-            <li data-project="PROJECT TWENTY-ONE" data-category="EXPERIMENTAL"><span>21</span>PROJECT TWENTY-ONE</li>
-            <li data-project="PROJECT TWENTY-TWO" data-category="EXPERIMENTAL"><span>22</span>PROJECT TWENTY-TWO</li>
-            <li data-project="PROJECT TWENTY-THREE" data-category="EXPERIMENTAL"><span>23</span>PROJECT TWENTY-THREE</li>
-            <li data-project="PROJECT TWENTY-FOUR" data-category="EXPERIMENTAL"><span>24</span>PROJECT TWENTY-FOUR</li>
-            <li data-project="PROJECT TWENTY-FIVE" data-category="EXPERIMENTAL"><span>25</span>PROJECT TWENTY-FIVE</li>
-        </ul>
-
-        <!-- Footer info moved into menu -->
-        <div class="info-bar" id="infoBar">
-            <div class="info-cell">DNGR GOODS</div>
-            <div class="info-cell">DANIAL GRAHAM</div>
-            <div class="info-cell">GOODS &amp; VISUAL SERVICES</div>
-            <div class="info-cell"><a href="mailto:danial@dngrgoods.com">DANIAL@DNGRGOODS.COM</a></div>
-            <div class="info-cell"><a href="tel:+61400165501">0400 165 501</a></div>
-        </div>
+    <!-- Footer info moved into menu -->
+    <div class="info-bar" id="infoBar">
+      <div class="info-cell">DNGR GOODS</div>
+      <div class="info-cell">DANIAL GRAHAM</div>
+      <div class="info-cell">GOODS &amp; VISUAL SERVICES</div>
+      <div class="info-cell"><a href="mailto:danial@dngrgoods.com">DANIAL@DNGRGOODS.COM</a></div>
+      <div class="info-cell"><a href="tel:+61400165501">0400 165 501</a></div>
     </div>
+  </div>
 
-    <div class="three-container"></div>
+  <div class="three-container"></div>
 
-    <script>
-        const openPreviews = {};
-        let gridMode = false;
-        let zIndex = 10;
+  <script>
+    const openPreviews = {};
+    let gridMode = false;
+    let zIndex = 10;
 
-        const safeStorage = (() => {
-            try {
-                const testKey = '__dngr_storage_test__';
-                window.localStorage.setItem(testKey, '1');
-                window.localStorage.removeItem(testKey);
-                return window.localStorage;
-            } catch (e) {
-                const memoryStore = {};
-                return {
-                    getItem: (key) => Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null,
-                    setItem: (key, value) => {
-                        memoryStore[key] = String(value);
-                    },
-                    removeItem: (key) => {
-                        delete memoryStore[key];
-                    },
-                    clear: () => {
-                        Object.keys(memoryStore).forEach((key) => delete memoryStore[key]);
-                    }
-                };
-            }
-        })();
+    const safeStorage = (() => {
+      try {
+        const testKey = '__dngr_storage_test__';
+        window.localStorage.setItem(testKey, '1');
+        window.localStorage.removeItem(testKey);
+        return window.localStorage;
+      } catch (e) {
+        const memoryStore = {};
+        return {
+          getItem: (key) => Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null,
+          setItem: (key, value) => { memoryStore[key] = String(value); },
+          removeItem: (key) => { delete memoryStore[key]; },
+          clear: () => { Object.keys(memoryStore).forEach((key) => delete memoryStore[key]); }
+        };
+      }
+    })();
 
 
-        const isMobileView = () => window.matchMedia('(max-width: 800px)').matches;
+    const isMobileView = () => window.matchMedia('(max-width: 800px)').matches;
 
-        const STORAGE_KEYS = {
-            free: 'dngrPreviewMemoryV1',
-            grid: 'dngrGridMemoryV1'
+    const STORAGE_KEYS = {
+      free: 'dngrPreviewMemoryV1',
+      grid: 'dngrGridMemoryV1'
+    };
+
+    const readStore = (key) => {
+      try { return JSON.parse(safeStorage.getItem(key) || '{}'); }
+      catch(e) { return {}; }
+    };
+
+    const writeStore = (key, value) => {
+      try { safeStorage.setItem(key, JSON.stringify(value)); }
+      catch(e) {}
+    };
+
+    const saveFreePreviewState = (project, preview) => {
+      if (gridMode || isMobileView()) return;
+      const store = readStore(STORAGE_KEYS.free);
+      store[project] = {
+        top: preview.style.top,
+        left: preview.style.left,
+        width: preview.style.width,
+        height: preview.style.height,
+        transform: preview.style.transform,
+        expanded: false
+      };
+      writeStore(STORAGE_KEYS.free, store);
+    };
+
+    const applyFreePreviewState = (project, preview) => {
+      if (gridMode || isMobileView()) return false;
+      const state = readStore(STORAGE_KEYS.free)[project];
+      if (!state) return false;
+      preview.style.top = state.top || '50%';
+      preview.style.left = state.left || '50%';
+      preview.style.width = state.width || '600px';
+      preview.style.height = state.height || 'auto';
+      preview.style.transform = state.transform || 'none';
+
+      return true;
+    };
+
+    const saveGridPreviewState = (project, preview) => {
+      if (!gridMode || isMobileView()) return;
+      const store = readStore(STORAGE_KEYS.grid);
+      store[project] = {
+        colSpan: preview.dataset.colSpan,
+        rowSpan: preview.dataset.rowSpan,
+        colStart: preview.dataset.colStart,
+        rowStart: preview.dataset.rowStart,
+        expanded: false
+      };
+      writeStore(STORAGE_KEYS.grid, store);
+    };
+
+    const getGridPreviewState = (project) => {
+      return readStore(STORAGE_KEYS.grid)[project] || null;
+    };
+
+
+
+
+    const freeModeSnapshot = {};
+
+    const snapshotFreeModeLayout = () => {
+      if (isMobileView()) return;
+
+      Object.keys(openPreviews).forEach((project) => {
+        const preview = openPreviews[project];
+        if (!preview || preview.classList.contains('in-grid')) return;
+
+        freeModeSnapshot[project] = {
+          position: preview.style.position || 'absolute',
+          top: preview.style.top || `${preview.offsetTop}px`,
+          left: preview.style.left || `${preview.offsetLeft}px`,
+          width: preview.style.width || `${preview.offsetWidth}px`,
+          height: preview.style.height || preview.style.minHeight || 'auto',
+          minHeight: preview.style.minHeight || '',
+          maxHeight: preview.style.maxHeight || '',
+          transform: preview.style.transform || 'none',
+          zIndex: preview.style.zIndex || ''
+        };
+      });
+    };
+
+    const restoreFreeModeLayout = (project, preview) => {
+      if (isMobileView()) return false;
+
+      const state = freeModeSnapshot[project];
+      if (!state) return false;
+
+      preview.style.position = 'absolute';
+      preview.style.top = state.top;
+      preview.style.left = state.left;
+      preview.style.width = state.width;
+      preview.style.height = state.height;
+      preview.style.minHeight = state.minHeight;
+      preview.style.maxHeight = state.maxHeight;
+      preview.style.transform = state.transform || 'none';
+      preview.style.zIndex = state.zIndex || `${++zIndex}`;
+      preview.style.overflowX = 'hidden';
+      preview.style.overflowY = 'auto';
+
+      return true;
+    };
+
+
+    // Theme toggle
+    const invertBtn = document.getElementById('invertBtn');
+    const savedDarkMode = safeStorage.getItem('darkMode') === 'true';
+    if (savedDarkMode) document.body.classList.add('dark-mode');
+    invertBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      safeStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+
+    // Grid toggle
+    const gridBtn = document.getElementById('gridBtn');
+    const gridContainer = document.getElementById('gridContainer');
+    const mobileStackContainer = document.getElementById('mobileStackContainer');
+    gridBtn.addEventListener('click', () => {
+      if (isMobileView()) return;
+
+      const enteringGrid = !gridMode;
+      if (enteringGrid) snapshotFreeModeLayout();
+
+      gridMode = enteringGrid;
+      gridContainer.classList.toggle('active', gridMode);
+
+      if (gridMode) reorganizePreviewsInGrid();
+      else resetPreviewsToAbsolute();
+    });
+
+    // Free mode dragging
+    const makeDraggable = (element) => {
+      let isDragging = false, sx, sy, ex, ey;
+      const start = (e) => {
+        if (gridMode || isMobileView()) return;
+
+        const target = e.target;
+        const isInteractive =
+          target.closest('button') ||
+          target.closest('.preview-blurb') ||
+          target.closest('.preview-image-wrapper') ||
+          target.closest('video') ||
+          target.closest('img');
+
+        if (isInteractive) return;
+
+        isDragging = true;
+        sx = e.touches ? e.touches[0].clientX : e.clientX;
+        sy = e.touches ? e.touches[0].clientY : e.clientY;
+        ex = element.offsetLeft;
+        ey = element.offsetTop;
+        element.style.cursor = 'grabbing';
+        element.style.zIndex = `${++zIndex}`;
+      };
+      const move = (e) => {
+        if (!isDragging || gridMode || isMobileView()) return;
+
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const bounds = getViewportBoundsForFreePreview();
+        const rect = element.getBoundingClientRect();
+
+        const width = rect.width || element.offsetWidth || 600;
+        const height = rect.height || element.offsetHeight || 360;
+
+        const maxLeft = Math.max(bounds.minX, bounds.maxX - width);
+        const maxTop = Math.max(bounds.minY, bounds.maxY - height);
+
+        let nextLeft = ex + (cx - sx);
+        let nextTop = ey + (cy - sy);
+
+        nextLeft = Math.max(bounds.minX, Math.min(nextLeft, maxLeft));
+        nextTop = Math.max(bounds.minY, Math.min(nextTop, maxTop));
+
+        element.style.left = `${nextLeft}px`;
+        element.style.top  = `${nextTop}px`;
+        element.style.transform = 'none';
+      };
+      const stop = () => {
+        if (isDragging) constrainFreePreviewToViewport(element);
+        if (isDragging && element.dataset.project) saveFreePreviewState(element.dataset.project, element);
+        isDragging = false;
+        element.style.cursor = gridMode ? 'default' : 'grab';
+      };
+      element.addEventListener('mousedown', start); element.addEventListener('mousemove', move);
+      element.addEventListener('mouseup', stop); element.addEventListener('mouseleave', stop);
+      element.addEventListener('touchstart', start, {passive:false});
+      element.addEventListener('touchmove', move, {passive:false});
+      element.addEventListener('touchend', stop); element.addEventListener('touchcancel', stop);
+    };
+
+    // Project data (you can replace placeholders with your actual assets)
+    const projectData = {
+      'SOLARIS': {
+        image: 'https://github.com/danial-dngr/dngrgoods/blob/main/Holiday%20Sauce%20-%20Holding%20Sea%20horse%20.png?raw=true',
+        blurb: '<img src="https://github.com/danial-dngr/dngrgoods/blob/main/Holiday%20Sauce%20-%20Instax%20Photo.png?raw=true" alt="detail" /> SOLARIS IS AN EXPLORATION INTO MINIMAL SOLAR HOUSING FOR URBAN SPACES.'
+      },
+      'GO MAD': { image: 'https://via.placeholder.com/1200x700/000000/FFFFFF?text=GO+MAD', blurb: 'GO MAD IS AN ENERGETIC PROJECT AIMED AT CAPTURING HUMAN CREATIVITY.' },
+      'LSW': { image: 'PROOF _ LSW BUILT - BRAND IDENTITY OPTIONS-2.png', blurb: 'LSW ENCAPSULATES THE ESSENCE OF LIVING SIMPLY WITH WATER THEMES.' },
+      'VANCE LIVING': { image: 'FINAL VANCE SNOW 6 FRONT.png', blurb: 'VANCE LIVING REIMAGINES MODULAR ARCHITECTURE IN DAILY LIFE.' },
+      'ABOUT DNGR': { image: 'https://dngrgoods.com/wp-content/uploads/2023/07/DSC01289-1.png', blurb: 'CREATIVE DIRECTION, BRAND IDENTITY, TYPOGRAPHY, LOGO & STRATEGIC DESIGN.' },
+      'NOCTURNAL INGESTIONS': {
+        image: 'https://github.com/danial-dngr/dngrgoods/blob/main/Screen%20Shot%202022-11-03%20at%205.31.19%20pm.png?raw=true',
+        blurb: 'LATE NIGHT RESTAURANT IDENTITY WITH BENDIGO HOTEL, COLLINGWOOD.'
+      },
+      'THAIMESE': {
+        image: 'https://github.com/danial-dngr/dngrgoods/blob/main/MMALE%20MODEL%20WEARING%20SHIRT%20FUll.jpg?raw=true',
+        blurb: 'THAIMESE PROJECT DESCRIPTION HERE.'
+      },
+      'KINETIC MOTION': {
+        image: 'FINDING TIME 3.mp4',
+        blurb: 'KINETIC MOTION EXPLORES DYNAMIC MOVEMENT AND VISUAL RHYTHM.'
+      },
+      'GOM MAKER': { image: 'GOM PROCESSES.png', blurb: 'GỐM MAKER IS A MELBOURNE BASED CERAMICS PRACTICE POSITIONED AT THE INTERSECTION OF CONTEMPORARY CRAFT AND CONCEPTUAL ART. THE BRAND IS GROUNDED IN PROCESS, NARRATIVE, AND CULTURAL REFERENCE, DRAWING FROM VIETNAMESE LANGUAGE AND MAKING TRADITIONS TO FRAME A QUIET, NON COMMERCIAL IDENTITY.THE VISUAL IDENTITY IS DELIBERATELY RESTRAINED, UTILISING MINIMAL TYPOGRAPHY, SOFT NEUTRAL TONES, AND GENEROUS NEGATIVE SPACE TO FOREGROUND THE WORK. PHOTOGRAPHY ACTS AS THE PRIMARY COMMUNICATION DEVICE, PRESENTING EACH PIECE WITH A GALLERY LIKE SENSIBILITY. DIGITALLY, THE WEBSITE FUNCTIONS AS AN EXTENSION OF THE PRACTICE RATHER THAN A TRANSACTIONAL PLATFORM. A SLOW, EDITORIAL LAYOUT AND SIMPLIFIED NAVIGATION PRIORITISE VIEWING AND REFLECTION OVER INTERACTION, REINFORCING THE BRAND’S CONTEMPLATIVE TONE.' },
+      'HOLIDAY': { image: 'Holiday Sauce - Logo (1).png', blurb: '<img src="Holiday Sauce - Logo.png" alt="Nocturnal detail 1"><img src="Holiday Sauce - ON its side.png">HOLIDAY IS A CONTEMPORARY SAUCE BRAND DEVELOPED TO REFRAME EVERYDAY CONDIMENTS AS EXPRESSIVE, LIFESTYLE DRIVEN OBJECTS. POSITIONED BETWEEN FOOD AND FASHION, THE BRAND DRAWS ON EDITORIAL IMAGERY, BOLD COLOUR PALETTES, AND PLAYFUL NARRATIVE TO CREATE A DISTINCTIVE AND MEMORABLE IDENTITY. AT THE CORE OF THE PROJECT IS A CONTRAST BETWEEN REFINEMENT AND HUMOUR. A CLASSIC SERIF MONOGRAM AND ELEGANT TYPOGRAPHIC SYSTEM ARE PAIRED WITH UNEXPECTED ILLUSTRATIONS AND SURREAL VISUAL ELEMENTS, SUCH AS THE LOBSTER MOTIF AND STYLISED CHARACTER WORK. THIS JUXTAPOSITION CREATES A BRAND THAT FEELS BOTH PREMIUM AND IRREVERENT.' },
+      'THE TASTY STUFF': { image: 'THE TASTY STUFF - 1.png', blurb: 'PROJECT ELEVEN DESCRIPTION.' },
+      'PROJECT TWELVE': { image: 'https://via.placeholder.com/1200x700/2a2a2a/FFFFFF?text=PROJECT+TWELVE', blurb: 'PROJECT TWELVE DESCRIPTION.' },
+      'PROJECT THIRTEEN': { image: 'https://via.placeholder.com/1200x700/333333/FFFFFF?text=PROJECT+THIRTEEN', blurb: 'PROJECT THIRTEEN DESCRIPTION.' },
+      'PROJECT FOURTEEN': { image: 'https://via.placeholder.com/1200x700/3a3a3a/FFFFFF?text=PROJECT+FOURTEEN', blurb: 'PROJECT FOURTEEN DESCRIPTION.' },
+      'PROJECT FIFTEEN': { image: 'https://via.placeholder.com/1200x700/444444/FFFFFF?text=PROJECT+FIFTEEN', blurb: 'PROJECT FIFTEEN DESCRIPTION.' },
+      'PROJECT SIXTEEN': { image: 'https://via.placeholder.com/1200x700/4a4a4a/FFFFFF?text=PROJECT+SIXTEEN', blurb: 'PROJECT SIXTEEN DESCRIPTION.' },
+      'PROJECT SEVENTEEN': { image: 'https://via.placeholder.com/1200x700/555555/FFFFFF?text=PROJECT+SEVENTEEN', blurb: 'PROJECT SEVENTEEN DESCRIPTION.' },
+      'PROJECT EIGHTEEN': { image: 'https://via.placeholder.com/1200x700/5a5a5a/FFFFFF?text=PROJECT+EIGHTEEN', blurb: 'PROJECT EIGHTEEN DESCRIPTION.' },
+      'PROJECT NINETEEN': { image: 'https://via.placeholder.com/1200x700/666666/FFFFFF?text=PROJECT+NINETEEN', blurb: 'PROJECT NINETEEN DESCRIPTION.' },
+      'PROJECT TWENTY': { image: 'https://via.placeholder.com/1200x700/6a6a6a/FFFFFF?text=PROJECT+TWENTY', blurb: 'PROJECT TWENTY DESCRIPTION.' },
+      'PROJECT TWENTY-ONE': { image: 'https://via.placeholder.com/1200x700/777777/FFFFFF?text=PROJECT+TWENTY-ONE', blurb: 'PROJECT TWENTY-ONE DESCRIPTION.' },
+      'PROJECT TWENTY-TWO': { image: 'https://via.placeholder.com/1200x700/7a7a7a/FFFFFF?text=PROJECT+TWENTY-TWO', blurb: 'PROJECT TWENTY-TWO DESCRIPTION.' },
+      'PROJECT TWENTY-THREE': { image: 'https://via.placeholder.com/1200x700/858585/FFFFFF?text=PROJECT+TWENTY-THREE', blurb: 'PROJECT TWENTY-THREE DESCRIPTION.' },
+      'PROJECT TWENTY-FOUR': { image: 'https://via.placeholder.com/1200x700/909090/FFFFFF?text=PROJECT+TWENTY-FOUR', blurb: 'PROJECT TWENTY-FOUR DESCRIPTION.' },
+      'PROJECT TWENTY-FIVE': { image: 'https://via.placeholder.com/1200x700/999999/FFFFFF?text=PROJECT+TWENTY-FIVE', blurb: 'PROJECT TWENTY-FIVE DESCRIPTION.' }
+    };
+
+    /* === Helpers === */
+    const getGridMetrics = () => {
+      const styles = getComputedStyle(gridContainer);
+      const root = getComputedStyle(document.documentElement);
+      const cols = parseInt(root.getPropertyValue('--swiss-columns')) || 12;
+      const gap = parseFloat(styles.gap || styles.columnGap || '15') || 15;
+      const rect = gridContainer.getBoundingClientRect();
+      const colWidth = (rect.width - gap * (cols - 1)) / cols;
+      const rh = parseFloat(root.getPropertyValue('--swiss-row')) || 12;
+      const effCol = colWidth + gap;
+      const effRow = rh + gap;
+      const containerHeight = rect.height;
+      return { cols, gap, colWidth, rh, effCol, effRow, containerHeight };
+    };
+
+    const autoSizeRowSpan = (preview, minRows=1) => {
+      if (!gridMode) return;
+      const { rh, gap } = getGridMetrics();
+      const h = preview.getBoundingClientRect().height;
+      const rows = Math.max(minRows, Math.round((h + gap) / (rh + gap)));
+      preview.dataset.rowSpan = String(rows);
+      preview.style.gridRow = `span ${rows}`;
+    };
+
+    const createMediaEl = (src, alt) => {
+      const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
+      if (isVideo) {
+        const v = document.createElement('video');
+        v.src = src; v.controls = true; v.loop = true; v.muted = true; v.playsInline = true; v.autoplay = true;
+        v.setAttribute('aria-label', alt || 'Project video'); v.preload = 'metadata';
+        return v;
+      } else {
+        const img = document.createElement('img');
+        img.src = src; img.alt = alt || 'Project image'; img.loading = 'lazy'; img.draggable = false;
+        return img;
+      }
+    };
+
+    const ensureAutoSizeOnMediaLoad = (preview, minRows=1) => {
+      const imgs = preview.querySelectorAll('img');
+      const vids = preview.querySelectorAll('video');
+      const fit = () => autoSizeRowSpan(preview, minRows);
+
+      imgs.forEach(img => img.complete ? fit() : img.addEventListener('load', fit, {once:true}));
+      vids.forEach(v => (v.readyState >= 2) ? fit() : v.addEventListener('loadeddata', fit, {once:true}));
+
+      if (window.ResizeObserver) {
+        if (preview._ro) { try { preview._ro.disconnect(); } catch(e){} }
+        const ro = new ResizeObserver(() => { if (gridMode) autoSizeRowSpan(preview, minRows); });
+        ro.observe(preview);
+        preview._ro = ro;
+      }
+    };
+
+    const approxSpansFromPixels = (pxWidth, pxHeight) => {
+      const { cols, effCol, effRow } = getGridMetrics();
+      const colSpan = Math.min(cols, Math.max(1, Math.round(pxWidth / effCol)));
+      const rowSpan = Math.max(1, Math.round(pxHeight / effRow));
+      return { colSpan, rowSpan };
+    };
+
+    const getRandomGridSizeForMedia = (src) => {
+      const sizes = [
+        { colSpan: 2, rowSpan: 18 },
+        { colSpan: 3, rowSpan: 20 },
+        { colSpan: 3, rowSpan: 23 },
+        { colSpan: 4, rowSpan: 21 },
+        { colSpan: 4, rowSpan: 24 },
+        { colSpan: 5, rowSpan: 26 }
+      ];
+
+      const wideSizes = [
+        { colSpan: 4, rowSpan: 16 },
+        { colSpan: 5, rowSpan: 18 },
+        { colSpan: 5, rowSpan: 20 }
+      ];
+
+      const tallSizes = [
+        { colSpan: 2, rowSpan: 26 },
+        { colSpan: 3, rowSpan: 29 },
+        { colSpan: 3, rowSpan: 32 }
+      ];
+
+      const videoSizes = [
+        { colSpan: 4, rowSpan: 22 },
+        { colSpan: 5, rowSpan: 24 },
+        { colSpan: 5, rowSpan: 26 }
+      ];
+
+      const source = (src || '').toLowerCase();
+      const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(source);
+
+      const isWide =
+        source.includes('front') ||
+        source.includes('screen') ||
+        source.includes('screenshot') ||
+        source.includes('landscape') ||
+        source.includes('wide') ||
+        source.includes('holding') ||
+        source.includes('built');
+
+      const isTall =
+        source.includes('portrait') ||
+        source.includes('poster') ||
+        source.includes('vertical');
+
+      if (isVideo) return videoSizes[Math.floor(Math.random() * videoSizes.length)];
+      if (isWide) return wideSizes[Math.floor(Math.random() * wideSizes.length)];
+      if (isTall) return tallSizes[Math.floor(Math.random() * tallSizes.length)];
+
+      return sizes[Math.floor(Math.random() * sizes.length)];
+    };
+
+    const addGridResizer = (preview) => {
+      if (preview.querySelector('.grid-resize')) return;
+      const handle = document.createElement('div');
+      handle.className = 'grid-resize';
+      preview.appendChild(handle);
+
+      const onDown = (e) => {
+        if (!gridMode) return;
+        e.preventDefault();
+        const start = e.touches ? e.touches[0] : e;
+        const startX = start.clientX, startY = start.clientY;
+        const { cols, effCol, effRow } = getGridMetrics();
+        let startColSpan = parseInt(preview.dataset.colSpan || '1', 10);
+        let startRowSpan = parseInt(preview.dataset.rowSpan || '1', 10);
+
+        const onMove = (ev) => {
+          if (!gridMode) return;
+          const p = ev.touches ? ev.touches[0] : ev;
+          const dx = p.clientX - startX, dy = p.clientY - startY;
+
+          let newCol = Math.round((startColSpan * effCol + dx) / effCol);
+          let newRow = Math.round((startRowSpan * effRow + dy) / effRow);
+
+          const minRows = Math.max(1, Math.ceil(350 / effRow)); /* enforce 350px min */
+          newCol = Math.max(1, Math.min(cols, newCol));
+          newRow = Math.max(minRows, newRow);
+
+          preview.dataset.colSpan = String(newCol);
+          preview.dataset.rowSpan = String(newRow);
+          preview.style.gridColumn = `span ${newCol}`;
+          preview.style.gridRow = `span ${newRow}`;
         };
 
-        const readStore = (key) => {
-            try {
-                return JSON.parse(safeStorage.getItem(key) || '{}');
-            } catch (e) {
-                return {};
-            }
+        const onUp = () => {
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('mouseup', onUp);
+          window.removeEventListener('touchmove', onMove);
+          window.removeEventListener('touchend', onUp);
+          window.removeEventListener('touchcancel', onUp);
+          const { effRow } = getGridMetrics();
+          autoSizeRowSpan(preview, Math.max(1, Math.ceil(350/effRow)));
+          if (preview.dataset.project) saveGridPreviewState(preview.dataset.project, preview);
         };
 
-        const writeStore = (key, value) => {
-            try {
-                safeStorage.setItem(key, JSON.stringify(value));
-            } catch (e) {}
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        window.addEventListener('touchmove', onMove, {passive:false});
+        window.addEventListener('touchend', onUp);
+        window.addEventListener('touchcancel', onUp);
+      };
+
+      handle.addEventListener('mousedown', onDown);
+      handle.addEventListener('touchstart', onDown, {passive:false});
+    };
+
+    const makeGridMovable = (preview) => {
+      const onDown = (e) => {
+        if (!gridMode) return;
+        if (e.target && e.target.classList.contains('grid-resize')) return;
+        e.preventDefault(); e.stopPropagation();
+
+        const start = e.touches ? e.touches[0] : e;
+        const { cols, effCol, effRow } = getGridMetrics();
+        const rect = gridContainer.getBoundingClientRect();
+        const colSpan = parseInt(preview.dataset.colSpan || '1', 10);
+        const rowSpan = parseInt(preview.dataset.rowSpan || '1', 10);
+        preview.classList.add('dragging');
+
+        const onMove = (ev) => {
+          if (!gridMode) return;
+          const p = ev.touches ? ev.touches[0] : ev;
+          const x = p.clientX - rect.left;
+          const y = p.clientY - rect.top;
+          let colStart = Math.floor(x / effCol) + 1;
+          let rowStart = Math.floor(y / effRow) + 1;
+          colStart = Math.max(1, Math.min(cols - colSpan + 1, colStart));
+          rowStart = Math.max(1, rowStart);
+          preview.dataset.colStart = String(colStart);
+          preview.dataset.rowStart = String(rowStart);
+          preview.style.gridColumn = `${colStart} / span ${colSpan}`;
+          preview.style.gridRow = `${rowStart} / span ${rowSpan}`;
         };
 
-        const saveFreePreviewState = (project, preview) => {
-            if (gridMode || isMobileView()) return;
-            const store = readStore(STORAGE_KEYS.free);
-            store[project] = {
-                top: preview.style.top,
-                left: preview.style.left,
-                width: preview.style.width,
-                height: preview.style.height,
-                transform: preview.style.transform,
-                expanded: false
-            };
-            writeStore(STORAGE_KEYS.free, store);
+        const onUp = () => {
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('mouseup', onUp);
+          window.removeEventListener('touchmove', onMove);
+          window.removeEventListener('touchend', onUp);
+          window.removeEventListener('touchcancel', onUp);
+          preview.classList.remove('dragging');
+          const { effRow } = getGridMetrics();
+          autoSizeRowSpan(preview, Math.max(1, Math.ceil(350/effRow)));
+          if (preview.dataset.project) saveGridPreviewState(preview.dataset.project, preview);
         };
 
-        const applyFreePreviewState = (project, preview) => {
-            if (gridMode || isMobileView()) return false;
-            const state = readStore(STORAGE_KEYS.free)[project];
-            if (!state) return false;
-            preview.style.top = state.top || '50%';
-            preview.style.left = state.left || '50%';
-            preview.style.width = state.width || '600px';
-            preview.style.height = state.height || 'auto';
-            preview.style.transform = state.transform || 'none';
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        window.addEventListener('touchmove', onMove, {passive:false});
+        window.addEventListener('touchend', onUp);
+        window.addEventListener('touchcancel', onUp);
+      };
 
-            return true;
-        };
+      preview.addEventListener('mousedown', onDown);
+      preview.addEventListener('touchstart', onDown, {passive:false});
+    };
 
-        const saveGridPreviewState = (project, preview) => {
-            if (!gridMode || isMobileView()) return;
-            const store = readStore(STORAGE_KEYS.grid);
-            store[project] = {
-                colSpan: preview.dataset.colSpan,
-                rowSpan: preview.dataset.rowSpan,
-                colStart: preview.dataset.colStart,
-                rowStart: preview.dataset.rowStart,
-                expanded: false
-            };
-            writeStore(STORAGE_KEYS.grid, store);
-        };
+    const reorganizePreviewsInGrid = () => {
+      gridContainer.innerHTML = '';
+      const keys = Object.keys(openPreviews);
+      const count = keys.length;
+      const { cols, effRow, containerHeight } = getGridMetrics();
+      const minRows = Math.max(1, Math.ceil(350 / effRow)); /* 350px min */
 
-        const getGridPreviewState = (project) => {
-            return readStore(STORAGE_KEYS.grid)[project] || null;
-        };
+      keys.forEach((project) => {
+        const preview = openPreviews[project];
+        gridContainer.appendChild(preview);
 
+        preview.classList.add('in-grid');
+        preview.style.position = 'relative';
+        preview.style.transform = 'none';
+        preview.style.top = 'auto';
+        preview.style.left = 'auto';
+        preview.style.width = '100%';
+        preview.style.height = 'auto';
 
+        let colSpan, rowSpan;
+        if (count === 1) {
+          colSpan = cols;
+          rowSpan = Math.max(minRows, Math.ceil(containerHeight / effRow));
+        } else {
+          const media = preview.querySelector('img, video');
+          const src = media ? media.getAttribute('src') : '';
+          const randomSize = getRandomGridSizeForMedia(src);
 
-        // Theme toggle
-        const invertBtn = document.getElementById('invertBtn');
-        const savedDarkMode = safeStorage.getItem('darkMode') === 'true';
-        if (savedDarkMode) document.body.classList.add('dark-mode');
-        invertBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            safeStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+          colSpan = Math.min(cols, randomSize.colSpan);
+          rowSpan = Math.max(minRows, randomSize.rowSpan);
+        }
+
+        const savedGridState = getGridPreviewState(project);
+        if (savedGridState) {
+          colSpan = parseInt(savedGridState.colSpan || colSpan, 10);
+          rowSpan = parseInt(savedGridState.rowSpan || rowSpan, 10);
+        }
+
+        preview.dataset.colSpan = String(colSpan);
+        preview.dataset.rowSpan = String(rowSpan);
+
+        if (savedGridState && savedGridState.colStart && savedGridState.rowStart) {
+          preview.dataset.colStart = savedGridState.colStart;
+          preview.dataset.rowStart = savedGridState.rowStart;
+          preview.style.gridColumn = `${savedGridState.colStart} / span ${colSpan}`;
+          preview.style.gridRow = `${savedGridState.rowStart} / span ${rowSpan}`;
+        } else {
+          preview.style.gridColumn = `span ${colSpan}`;
+          preview.style.gridRow = `span ${rowSpan}`;
+        }
+
+        addGridResizer(preview);
+        makeGridMovable(preview);
+
+        requestAnimationFrame(() => {
+          ensureAutoSizeOnMediaLoad(preview, minRows);
+          autoSizeRowSpan(preview, minRows);
         });
-
-        // Grid toggle
-        const gridBtn = document.getElementById('gridBtn');
-        const gridContainer = document.getElementById('gridContainer');
-        const mobileStackContainer = document.getElementById('mobileStackContainer');
-        gridBtn.addEventListener('click', () => {
-            if (isMobileView()) return;
-
-            gridMode = !gridMode;
-            gridContainer.classList.toggle('active', gridMode);
-
-            if (gridMode) reorganizePreviewsInGrid();
-            else resetPreviewsToAbsolute();
-        });
-
-        // Free mode dragging
-        const makeDraggable = (element) => {
-            let isDragging = false,
-                sx, sy, ex, ey;
-            const start = (e) => {
-                if (gridMode || isMobileView()) return;
-
-                const target = e.target;
-                const isInteractive =
-                    target.closest('button') ||
-                    target.closest('.preview-blurb') ||
-                    target.closest('.preview-image-wrapper') ||
-                    target.closest('video') ||
-                    target.closest('img');
-
-                if (isInteractive) return;
-
-                isDragging = true;
-                sx = e.touches ? e.touches[0].clientX : e.clientX;
-                sy = e.touches ? e.touches[0].clientY : e.clientY;
-                ex = element.offsetLeft;
-                ey = element.offsetTop;
-                element.style.cursor = 'grabbing';
-                element.style.zIndex = `${++zIndex}`;
-            };
-            const move = (e) => {
-                if (!isDragging || gridMode || isMobileView()) return;
-
-                const cx = e.touches ? e.touches[0].clientX : e.clientX;
-                const cy = e.touches ? e.touches[0].clientY : e.clientY;
-
-                const bounds = getViewportBoundsForFreePreview();
-                const rect = element.getBoundingClientRect();
-
-                const width = rect.width || element.offsetWidth || 600;
-                const height = rect.height || element.offsetHeight || 360;
-
-                const maxLeft = Math.max(bounds.minX, bounds.maxX - width);
-                const maxTop = Math.max(bounds.minY, bounds.maxY - height);
-
-                let nextLeft = ex + (cx - sx);
-                let nextTop = ey + (cy - sy);
-
-                nextLeft = Math.max(bounds.minX, Math.min(nextLeft, maxLeft));
-                nextTop = Math.max(bounds.minY, Math.min(nextTop, maxTop));
-
-                element.style.left = `${nextLeft}px`;
-                element.style.top = `${nextTop}px`;
-                element.style.transform = 'none';
-            };
-            const stop = () => {
-                if (isDragging) constrainFreePreviewToViewport(element);
-                if (isDragging && element.dataset.project) saveFreePreviewState(element.dataset.project, element);
-                isDragging = false;
-                element.style.cursor = gridMode ? 'default' : 'grab';
-            };
-            element.addEventListener('mousedown', start);
-            element.addEventListener('mousemove', move);
-            element.addEventListener('mouseup', stop);
-            element.addEventListener('mouseleave', stop);
-            element.addEventListener('touchstart', start, {
-                passive: false
-            });
-            element.addEventListener('touchmove', move, {
-                passive: false
-            });
-            element.addEventListener('touchend', stop);
-            element.addEventListener('touchcancel', stop);
-        };
-
-        // Project data (you can replace placeholders with your actual assets)
-        const projectData = {
-            'SOLARIS': {
-                image: 'https://github.com/danial-dngr/dngrgoods/blob/main/Holiday%20Sauce%20-%20Holding%20Sea%20horse%20.png?raw=true',
-                blurb: '<img src="https://github.com/danial-dngr/dngrgoods/blob/main/Holiday%20Sauce%20-%20Instax%20Photo.png?raw=true" alt="detail" /> SOLARIS IS AN EXPLORATION INTO MINIMAL SOLAR HOUSING FOR URBAN SPACES.'
-            },
-            'GO MAD': {
-                image: 'https://via.placeholder.com/1200x700/000000/FFFFFF?text=GO+MAD',
-                blurb: 'GO MAD IS AN ENERGETIC PROJECT AIMED AT CAPTURING HUMAN CREATIVITY.'
-            },
-            'LSW': {
-                image: 'PROOF _ LSW BUILT - BRAND IDENTITY OPTIONS-2.png',
-                blurb: 'LSW ENCAPSULATES THE ESSENCE OF LIVING SIMPLY WITH WATER THEMES.'
-            },
-            'VANCE LIVING': {
-                image: 'FINAL VANCE SNOW 6 FRONT.png',
-                blurb: 'VANCE LIVING REIMAGINES MODULAR ARCHITECTURE IN DAILY LIFE.'
-            },
-            'ABOUT DNGR': {
-                image: 'https://dngrgoods.com/wp-content/uploads/2023/07/DSC01289-1.png',
-                blurb: 'CREATIVE DIRECTION, BRAND IDENTITY, TYPOGRAPHY, LOGO & STRATEGIC DESIGN.'
-            },
-            'NOCTURNAL INGESTIONS': {
-                image: 'https://github.com/danial-dngr/dngrgoods/blob/main/Screen%20Shot%202022-11-03%20at%205.31.19%20pm.png?raw=true',
-                blurb: 'LATE NIGHT RESTAURANT IDENTITY WITH BENDIGO HOTEL, COLLINGWOOD.'
-            },
-            'THAIMESE': {
-                image: 'https://github.com/danial-dngr/dngrgoods/blob/main/MMALE%20MODEL%20WEARING%20SHIRT%20FUll.jpg?raw=true',
-                blurb: 'THAIMESE PROJECT DESCRIPTION HERE.'
-            },
-            'KINETIC MOTION': {
-                image: 'FINDING TIME 3.mp4',
-                blurb: 'KINETIC MOTION EXPLORES DYNAMIC MOVEMENT AND VISUAL RHYTHM.'
-            },
-            'GOM MAKER': {
-                image: 'GOM PROCESSES.png',
-                blurb: 'GỐM MAKER IS A MELBOURNE BASED CERAMICS PRACTICE POSITIONED AT THE INTERSECTION OF CONTEMPORARY CRAFT AND CONCEPTUAL ART. THE BRAND IS GROUNDED IN PROCESS, NARRATIVE, AND CULTURAL REFERENCE, DRAWING FROM VIETNAMESE LANGUAGE AND MAKING TRADITIONS TO FRAME A QUIET, NON COMMERCIAL IDENTITY.THE VISUAL IDENTITY IS DELIBERATELY RESTRAINED, UTILISING MINIMAL TYPOGRAPHY, SOFT NEUTRAL TONES, AND GENEROUS NEGATIVE SPACE TO FOREGROUND THE WORK. PHOTOGRAPHY ACTS AS THE PRIMARY COMMUNICATION DEVICE, PRESENTING EACH PIECE WITH A GALLERY LIKE SENSIBILITY. DIGITALLY, THE WEBSITE FUNCTIONS AS AN EXTENSION OF THE PRACTICE RATHER THAN A TRANSACTIONAL PLATFORM. A SLOW, EDITORIAL LAYOUT AND SIMPLIFIED NAVIGATION PRIORITISE VIEWING AND REFLECTION OVER INTERACTION, REINFORCING THE BRAND’S CONTEMPLATIVE TONE.'
-            },
-            'HOLIDAY': {
-                image: 'Holiday Sauce - Logo (1).png',
-                blurb: '<img src="Holiday Sauce - Logo.png" alt="Nocturnal detail 1"><img src="Holiday Sauce - ON its side.png">HOLIDAY IS A CONTEMPORARY SAUCE BRAND DEVELOPED TO REFRAME EVERYDAY CONDIMENTS AS EXPRESSIVE, LIFESTYLE DRIVEN OBJECTS. POSITIONED BETWEEN FOOD AND FASHION, THE BRAND DRAWS ON EDITORIAL IMAGERY, BOLD COLOUR PALETTES, AND PLAYFUL NARRATIVE TO CREATE A DISTINCTIVE AND MEMORABLE IDENTITY. AT THE CORE OF THE PROJECT IS A CONTRAST BETWEEN REFINEMENT AND HUMOUR. A CLASSIC SERIF MONOGRAM AND ELEGANT TYPOGRAPHIC SYSTEM ARE PAIRED WITH UNEXPECTED ILLUSTRATIONS AND SURREAL VISUAL ELEMENTS, SUCH AS THE LOBSTER MOTIF AND STYLISED CHARACTER WORK. THIS JUXTAPOSITION CREATES A BRAND THAT FEELS BOTH PREMIUM AND IRREVERENT.'
-            },
-            'THE TASTY STUFF': {
-                image: 'THE TASTY STUFF - 1.png',
-                blurb: 'PROJECT ELEVEN DESCRIPTION.'
-            },
-            'PROJECT TWELVE': {
-                image: 'https://via.placeholder.com/1200x700/2a2a2a/FFFFFF?text=PROJECT+TWELVE',
-                blurb: 'PROJECT TWELVE DESCRIPTION.'
-            },
-            'PROJECT THIRTEEN': {
-                image: 'https://via.placeholder.com/1200x700/333333/FFFFFF?text=PROJECT+THIRTEEN',
-                blurb: 'PROJECT THIRTEEN DESCRIPTION.'
-            },
-            'PROJECT FOURTEEN': {
-                image: 'https://via.placeholder.com/1200x700/3a3a3a/FFFFFF?text=PROJECT+FOURTEEN',
-                blurb: 'PROJECT FOURTEEN DESCRIPTION.'
-            },
-            'PROJECT FIFTEEN': {
-                image: 'https://via.placeholder.com/1200x700/444444/FFFFFF?text=PROJECT+FIFTEEN',
-                blurb: 'PROJECT FIFTEEN DESCRIPTION.'
-            },
-            'PROJECT SIXTEEN': {
-                image: 'https://via.placeholder.com/1200x700/4a4a4a/FFFFFF?text=PROJECT+SIXTEEN',
-                blurb: 'PROJECT SIXTEEN DESCRIPTION.'
-            },
-            'PROJECT SEVENTEEN': {
-                image: 'https://via.placeholder.com/1200x700/555555/FFFFFF?text=PROJECT+SEVENTEEN',
-                blurb: 'PROJECT SEVENTEEN DESCRIPTION.'
-            },
-            'PROJECT EIGHTEEN': {
-                image: 'https://via.placeholder.com/1200x700/5a5a5a/FFFFFF?text=PROJECT+EIGHTEEN',
-                blurb: 'PROJECT EIGHTEEN DESCRIPTION.'
-            },
-            'PROJECT NINETEEN': {
-                image: 'https://via.placeholder.com/1200x700/666666/FFFFFF?text=PROJECT+NINETEEN',
-                blurb: 'PROJECT NINETEEN DESCRIPTION.'
-            },
-            'PROJECT TWENTY': {
-                image: 'https://via.placeholder.com/1200x700/6a6a6a/FFFFFF?text=PROJECT+TWENTY',
-                blurb: 'PROJECT TWENTY DESCRIPTION.'
-            },
-            'PROJECT TWENTY-ONE': {
-                image: 'https://via.placeholder.com/1200x700/777777/FFFFFF?text=PROJECT+TWENTY-ONE',
-                blurb: 'PROJECT TWENTY-ONE DESCRIPTION.'
-            },
-            'PROJECT TWENTY-TWO': {
-                image: 'https://via.placeholder.com/1200x700/7a7a7a/FFFFFF?text=PROJECT+TWENTY-TWO',
-                blurb: 'PROJECT TWENTY-TWO DESCRIPTION.'
-            },
-            'PROJECT TWENTY-THREE': {
-                image: 'https://via.placeholder.com/1200x700/858585/FFFFFF?text=PROJECT+TWENTY-THREE',
-                blurb: 'PROJECT TWENTY-THREE DESCRIPTION.'
-            },
-            'PROJECT TWENTY-FOUR': {
-                image: 'https://via.placeholder.com/1200x700/909090/FFFFFF?text=PROJECT+TWENTY-FOUR',
-                blurb: 'PROJECT TWENTY-FOUR DESCRIPTION.'
-            },
-            'PROJECT TWENTY-FIVE': {
-                image: 'https://via.placeholder.com/1200x700/999999/FFFFFF?text=PROJECT+TWENTY-FIVE',
-                blurb: 'PROJECT TWENTY-FIVE DESCRIPTION.'
-            }
-        };
-
-        /* === Helpers === */
-        const getGridMetrics = () => {
-            const styles = getComputedStyle(gridContainer);
-            const root = getComputedStyle(document.documentElement);
-            const cols = parseInt(root.getPropertyValue('--swiss-columns')) || 12;
-            const gap = parseFloat(styles.gap || styles.columnGap || '15') || 15;
-            const rect = gridContainer.getBoundingClientRect();
-            const colWidth = (rect.width - gap * (cols - 1)) / cols;
-            const rh = parseFloat(root.getPropertyValue('--swiss-row')) || 12;
-            const effCol = colWidth + gap;
-            const effRow = rh + gap;
-            const containerHeight = rect.height;
-            return {
-                cols,
-                gap,
-                colWidth,
-                rh,
-                effCol,
-                effRow,
-                containerHeight
-            };
-        };
-
-        const autoSizeRowSpan = (preview, minRows = 1) => {
-            if (!gridMode) return;
-            const {
-                rh,
-                gap
-            } = getGridMetrics();
-            const h = preview.getBoundingClientRect().height;
-            const rows = Math.max(minRows, Math.round((h + gap) / (rh + gap)));
-            preview.dataset.rowSpan = String(rows);
-            preview.style.gridRow = `span ${rows}`;
-        };
-
-        const createMediaEl = (src, alt) => {
-            const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
-            if (isVideo) {
-                const v = document.createElement('video');
-                v.src = src;
-                v.controls = true;
-                v.loop = true;
-                v.muted = true;
-                v.playsInline = true;
-                v.autoplay = true;
-                v.setAttribute('aria-label', alt || 'Project video');
-                v.preload = 'metadata';
-                return v;
-            } else {
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = alt || 'Project image';
-                img.loading = 'lazy';
-                img.draggable = false;
-                return img;
-            }
-        };
-
-        const ensureAutoSizeOnMediaLoad = (preview, minRows = 1) => {
-            const imgs = preview.querySelectorAll('img');
-            const vids = preview.querySelectorAll('video');
-            const fit = () => autoSizeRowSpan(preview, minRows);
-
-            imgs.forEach(img => img.complete ? fit() : img.addEventListener('load', fit, {
-                once: true
-            }));
-            vids.forEach(v => (v.readyState >= 2) ? fit() : v.addEventListener('loadeddata', fit, {
-                once: true
-            }));
-
-            if (window.ResizeObserver) {
-                if (preview._ro) {
-                    try {
-                        preview._ro.disconnect();
-                    } catch (e) {}
-                }
-                const ro = new ResizeObserver(() => {
-                    if (gridMode) autoSizeRowSpan(preview, minRows);
-                });
-                ro.observe(preview);
-                preview._ro = ro;
-            }
-        };
-
-        const approxSpansFromPixels = (pxWidth, pxHeight) => {
-            const {
-                cols,
-                effCol,
-                effRow
-            } = getGridMetrics();
-            const colSpan = Math.min(cols, Math.max(1, Math.round(pxWidth / effCol)));
-            const rowSpan = Math.max(1, Math.round(pxHeight / effRow));
-            return {
-                colSpan,
-                rowSpan
-            };
-        };
-
-        const getRandomGridSizeForMedia = (src) => {
-            const sizes = [{
-                    colSpan: 2,
-                    rowSpan: 18
-                },
-                {
-                    colSpan: 3,
-                    rowSpan: 20
-                },
-                {
-                    colSpan: 3,
-                    rowSpan: 23
-                },
-                {
-                    colSpan: 4,
-                    rowSpan: 21
-                },
-                {
-                    colSpan: 4,
-                    rowSpan: 24
-                },
-                {
-                    colSpan: 5,
-                    rowSpan: 26
-                }
-            ];
-
-            const wideSizes = [{
-                    colSpan: 4,
-                    rowSpan: 16
-                },
-                {
-                    colSpan: 5,
-                    rowSpan: 18
-                },
-                {
-                    colSpan: 5,
-                    rowSpan: 20
-                }
-            ];
-
-            const tallSizes = [{
-                    colSpan: 2,
-                    rowSpan: 26
-                },
-                {
-                    colSpan: 3,
-                    rowSpan: 29
-                },
-                {
-                    colSpan: 3,
-                    rowSpan: 32
-                }
-            ];
-
-            const videoSizes = [{
-                    colSpan: 4,
-                    rowSpan: 22
-                },
-                {
-                    colSpan: 5,
-                    rowSpan: 24
-                },
-                {
-                    colSpan: 5,
-                    rowSpan: 26
-                }
-            ];
-
-            const source = (src || '').toLowerCase();
-            const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(source);
-
-            const isWide =
-                source.includes('front') ||
-                source.includes('screen') ||
-                source.includes('screenshot') ||
-                source.includes('landscape') ||
-                source.includes('wide') ||
-                source.includes('holding') ||
-                source.includes('built');
-
-            const isTall =
-                source.includes('portrait') ||
-                source.includes('poster') ||
-                source.includes('vertical');
-
-            if (isVideo) return videoSizes[Math.floor(Math.random() * videoSizes.length)];
-            if (isWide) return wideSizes[Math.floor(Math.random() * wideSizes.length)];
-            if (isTall) return tallSizes[Math.floor(Math.random() * tallSizes.length)];
-
-            return sizes[Math.floor(Math.random() * sizes.length)];
-        };
-
-        const addGridResizer = (preview) => {
-            if (preview.querySelector('.grid-resize')) return;
-            const handle = document.createElement('div');
-            handle.className = 'grid-resize';
-            preview.appendChild(handle);
-
-            const onDown = (e) => {
-                if (!gridMode) return;
-                e.preventDefault();
-                const start = e.touches ? e.touches[0] : e;
-                const startX = start.clientX,
-                    startY = start.clientY;
-                const {
-                    cols,
-                    effCol,
-                    effRow
-                } = getGridMetrics();
-                let startColSpan = parseInt(preview.dataset.colSpan || '1', 10);
-                let startRowSpan = parseInt(preview.dataset.rowSpan || '1', 10);
-
-                const onMove = (ev) => {
-                    if (!gridMode) return;
-                    const p = ev.touches ? ev.touches[0] : ev;
-                    const dx = p.clientX - startX,
-                        dy = p.clientY - startY;
-
-                    let newCol = Math.round((startColSpan * effCol + dx) / effCol);
-                    let newRow = Math.round((startRowSpan * effRow + dy) / effRow);
-
-                    const minRows = Math.max(1, Math.ceil(350 / effRow)); /* enforce 350px min */
-                    newCol = Math.max(1, Math.min(cols, newCol));
-                    newRow = Math.max(minRows, newRow);
-
-                    preview.dataset.colSpan = String(newCol);
-                    preview.dataset.rowSpan = String(newRow);
-                    preview.style.gridColumn = `span ${newCol}`;
-                    preview.style.gridRow = `span ${newRow}`;
-                };
-
-                const onUp = () => {
-                    window.removeEventListener('mousemove', onMove);
-                    window.removeEventListener('mouseup', onUp);
-                    window.removeEventListener('touchmove', onMove);
-                    window.removeEventListener('touchend', onUp);
-                    window.removeEventListener('touchcancel', onUp);
-                    const {
-                        effRow
-                    } = getGridMetrics();
-                    autoSizeRowSpan(preview, Math.max(1, Math.ceil(350 / effRow)));
-                    if (preview.dataset.project) saveGridPreviewState(preview.dataset.project, preview);
-                };
-
-                window.addEventListener('mousemove', onMove);
-                window.addEventListener('mouseup', onUp);
-                window.addEventListener('touchmove', onMove, {
-                    passive: false
-                });
-                window.addEventListener('touchend', onUp);
-                window.addEventListener('touchcancel', onUp);
-            };
-
-            handle.addEventListener('mousedown', onDown);
-            handle.addEventListener('touchstart', onDown, {
-                passive: false
-            });
-        };
-
-        const makeGridMovable = (preview) => {
-            const onDown = (e) => {
-                if (!gridMode) return;
-                if (e.target && e.target.classList.contains('grid-resize')) return;
-                e.preventDefault();
-                e.stopPropagation();
-
-                const start = e.touches ? e.touches[0] : e;
-                const {
-                    cols,
-                    effCol,
-                    effRow
-                } = getGridMetrics();
-                const rect = gridContainer.getBoundingClientRect();
-                const colSpan = parseInt(preview.dataset.colSpan || '1', 10);
-                const rowSpan = parseInt(preview.dataset.rowSpan || '1', 10);
-                preview.classList.add('dragging');
-
-                const onMove = (ev) => {
-                    if (!gridMode) return;
-                    const p = ev.touches ? ev.touches[0] : ev;
-                    const x = p.clientX - rect.left;
-                    const y = p.clientY - rect.top;
-                    let colStart = Math.floor(x / effCol) + 1;
-                    let rowStart = Math.floor(y / effRow) + 1;
-                    colStart = Math.max(1, Math.min(cols - colSpan + 1, colStart));
-                    rowStart = Math.max(1, rowStart);
-                    preview.dataset.colStart = String(colStart);
-                    preview.dataset.rowStart = String(rowStart);
-                    preview.style.gridColumn = `${colStart} / span ${colSpan}`;
-                    preview.style.gridRow = `${rowStart} / span ${rowSpan}`;
-                };
-
-                const onUp = () => {
-                    window.removeEventListener('mousemove', onMove);
-                    window.removeEventListener('mouseup', onUp);
-                    window.removeEventListener('touchmove', onMove);
-                    window.removeEventListener('touchend', onUp);
-                    window.removeEventListener('touchcancel', onUp);
-                    preview.classList.remove('dragging');
-                    const {
-                        effRow
-                    } = getGridMetrics();
-                    autoSizeRowSpan(preview, Math.max(1, Math.ceil(350 / effRow)));
-                    if (preview.dataset.project) saveGridPreviewState(preview.dataset.project, preview);
-                };
-
-                window.addEventListener('mousemove', onMove);
-                window.addEventListener('mouseup', onUp);
-                window.addEventListener('touchmove', onMove, {
-                    passive: false
-                });
-                window.addEventListener('touchend', onUp);
-                window.addEventListener('touchcancel', onUp);
-            };
-
-            preview.addEventListener('mousedown', onDown);
-            preview.addEventListener('touchstart', onDown, {
-                passive: false
-            });
-        };
-
-        const reorganizePreviewsInGrid = () => {
-            gridContainer.innerHTML = '';
-            const keys = Object.keys(openPreviews);
-            const count = keys.length;
-            const {
-                cols,
-                effRow,
-                containerHeight
-            } = getGridMetrics();
-            const minRows = Math.max(1, Math.ceil(350 / effRow)); /* 350px min */
-
-            keys.forEach((project) => {
-                const preview = openPreviews[project];
-                gridContainer.appendChild(preview);
-
-                preview.classList.add('in-grid');
-                preview.style.position = 'relative';
-                preview.style.transform = 'none';
-                preview.style.top = 'auto';
-                preview.style.left = 'auto';
-                preview.style.width = '100%';
-                preview.style.height = 'auto';
-
-                let colSpan, rowSpan;
-                if (count === 1) {
-                    colSpan = cols;
-                    rowSpan = Math.max(minRows, Math.ceil(containerHeight / effRow));
-                } else {
-                    const media = preview.querySelector('img, video');
-                    const src = media ? media.getAttribute('src') : '';
-                    const randomSize = getRandomGridSizeForMedia(src);
-
-                    colSpan = Math.min(cols, randomSize.colSpan);
-                    rowSpan = Math.max(minRows, randomSize.rowSpan);
-                }
-
-                const savedGridState = getGridPreviewState(project);
-                if (savedGridState) {
-                    colSpan = parseInt(savedGridState.colSpan || colSpan, 10);
-                    rowSpan = parseInt(savedGridState.rowSpan || rowSpan, 10);
-                }
-
-                preview.dataset.colSpan = String(colSpan);
-                preview.dataset.rowSpan = String(rowSpan);
-
-                if (savedGridState && savedGridState.colStart && savedGridState.rowStart) {
-                    preview.dataset.colStart = savedGridState.colStart;
-                    preview.dataset.rowStart = savedGridState.rowStart;
-                    preview.style.gridColumn = `${savedGridState.colStart} / span ${colSpan}`;
-                    preview.style.gridRow = `${savedGridState.rowStart} / span ${rowSpan}`;
-                } else {
-                    preview.style.gridColumn = `span ${colSpan}`;
-                    preview.style.gridRow = `span ${rowSpan}`;
-                }
-
-                addGridResizer(preview);
-                makeGridMovable(preview);
-
-                requestAnimationFrame(() => {
-                    ensureAutoSizeOnMediaLoad(preview, minRows);
-                    autoSizeRowSpan(preview, minRows);
-                });
-            });
-        };
-
-        const resetPreviewsToAbsolute = () => {
-            Object.keys(openPreviews).forEach((project) => {
-                const preview = openPreviews[project];
-                if (preview._ro) {
-                    try {
-                        preview._ro.disconnect();
-                    } catch (e) {}
-                    delete preview._ro;
-                }
-                const h = preview.querySelector('.grid-resize');
-                if (h) h.remove();
-                preview.classList.remove('in-grid', 'dragging');
-
-                document.body.appendChild(preview);
-                preview.style.position = 'absolute';
-                preview.style.top = '50%';
-                preview.style.left = '50%';
-                preview.style.transform = 'translate(-50%, -50%)';
-                preview.style.width = '600px';
-                preview.style.height = 'auto';
-                preview.style.gridColumn = 'auto';
-                preview.style.gridRow = 'auto';
-            });
-        };
-
-
-        const getViewportBoundsForFreePreview = () => {
-            const margin = 20;
-            const headerBottom = 80;
-            const footerTop = window.innerHeight * 0.8 - 10;
-
-            return {
-                margin,
-                minX: margin,
-                minY: headerBottom,
-                maxX: Math.max(margin, window.innerWidth - margin),
-                maxY: Math.max(headerBottom + 260, footerTop)
-            };
-        };
-
-        const getInitialFreePreviewSize = (src) => {
-            const source = (src || '').toLowerCase();
-            const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(source);
-
-            const isWide =
-                source.includes('front') ||
-                source.includes('screen') ||
-                source.includes('screenshot') ||
-                source.includes('landscape') ||
-                source.includes('wide') ||
-                source.includes('holding') ||
-                source.includes('built');
-
-            const isTall =
-                source.includes('portrait') ||
-                source.includes('poster') ||
-                source.includes('vertical');
-
-            const maxWidth = Math.max(260, Math.min(760, window.innerWidth - 40));
-
-            if (isVideo) return {
-                width: Math.min(640, maxWidth),
-                minHeight: 360
-            };
-            if (isWide) return {
-                width: Math.min(720, maxWidth),
-                minHeight: 340
-            };
-            if (isTall) return {
-                width: Math.min(460, maxWidth),
-                minHeight: 500
-            };
-
-            return {
-                width: Math.min(560 + Math.round(Math.random() * 120), maxWidth),
-                minHeight: 360
-            };
-        };
-
-        const constrainFreePreviewToViewport = (preview) => {
-            if (gridMode || isMobileView()) return;
-
-            const bounds = getViewportBoundsForFreePreview();
-            const rect = preview.getBoundingClientRect();
-
-            let left = preview.offsetLeft;
-            let top = preview.offsetTop;
-
-            const width = rect.width || parseFloat(preview.style.width) || 600;
-            const usableHeight = Math.max(260, bounds.maxY - bounds.minY);
-            const height = Math.min(rect.height || 360, usableHeight);
-
-            preview.style.maxHeight = `${usableHeight}px`;
-            preview.style.overflowY = 'auto';
-            preview.style.overflowX = 'hidden';
-
-            const maxLeft = Math.max(bounds.minX, bounds.maxX - width);
-            const maxTop = Math.max(bounds.minY, bounds.maxY - height);
-
-            left = Math.max(bounds.minX, Math.min(left, maxLeft));
-            top = Math.max(bounds.minY, Math.min(top, maxTop));
-
-            preview.style.left = `${left}px`;
-            preview.style.top = `${top}px`;
-            preview.style.transform = 'none';
-        };
-
-        const placeFreePreviewRandomly = (project, preview, data) => {
-            if (gridMode || isMobileView()) return;
-
-            const remembered = applyFreePreviewState(project, preview);
-            if (remembered) {
-                constrainFreePreviewToViewport(preview);
-                return;
-            }
-
-            const size = getInitialFreePreviewSize(data.image);
-            const bounds = getViewportBoundsForFreePreview();
-
-            const usableHeight = Math.max(260, bounds.maxY - bounds.minY);
-
-            preview.style.width = `${size.width}px`;
-            preview.style.minHeight = `${Math.min(size.minHeight, usableHeight)}px`;
-            preview.style.maxHeight = `${usableHeight}px`;
-            preview.style.height = 'auto';
-            preview.style.overflowY = 'auto';
-            preview.style.overflowX = 'hidden';
-            preview.style.transform = 'none';
-
-            const approxHeight = Math.min(Math.max(size.minHeight, 320), Math.max(320, bounds.maxY - bounds.minY));
-            const maxLeft = Math.max(bounds.minX, bounds.maxX - size.width);
-            const maxTop = Math.max(bounds.minY, bounds.maxY - approxHeight);
-
-            const left = bounds.minX + Math.round(Math.random() * Math.max(0, maxLeft - bounds.minX));
-            const top = bounds.minY + Math.round(Math.random() * Math.max(0, maxTop - bounds.minY));
-
-            preview.style.left = `${left}px`;
-            preview.style.top = `${top}px`;
-        };
-
-        const createPreviewContainer = (project) => {
-            const data = projectData[project] || {
-                image: '',
-                blurb: 'DETAILS COMING SOON.'
-            };
-
-            if (openPreviews[project]) {
-                const p = openPreviews[project];
-
-                if (isMobileView()) {
-                    p.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                } else if (!gridMode) {
-                    p.style.top = '50%';
-                    p.style.left = '50%';
-                    p.style.transform = 'translate(-50%, -50%)';
-                }
-
-                return;
-            }
-
-            const preview = document.createElement('div');
-            preview.className = 'preview';
-            preview.dataset.project = project;
-            preview.style.top = '50%';
-            preview.style.left = '50%';
-            preview.style.transform = 'translate(-50%, -50%)';
-            preview.style.zIndex = `${++zIndex}`;
-
-            // Title above media (as requested)
-            preview.innerHTML = `
+      });
+    };
+
+    const resetPreviewsToAbsolute = () => {
+      Object.keys(openPreviews).forEach((project) => {
+        const preview = openPreviews[project];
+        if (preview._ro) { try { preview._ro.disconnect(); } catch(e){} delete preview._ro; }
+        const h = preview.querySelector('.grid-resize');
+        if (h) h.remove();
+        preview.classList.remove('in-grid', 'dragging');
+
+        document.body.appendChild(preview);
+        preview.style.gridColumn = 'auto';
+        preview.style.gridRow = 'auto';
+
+        const restoredSnapshot = restoreFreeModeLayout(project, preview);
+
+        if (!restoredSnapshot) {
+          preview.style.position = 'absolute';
+          preview.style.top = '50%';
+          preview.style.left = '50%';
+          preview.style.transform = 'translate(-50%, -50%)';
+          preview.style.width = '600px';
+          preview.style.height = 'auto';
+        }
+      });
+    };
+
+
+    const getViewportBoundsForFreePreview = () => {
+      const margin = 20;
+      const headerBottom = 80;
+      const footerTop = window.innerHeight * 0.8 - 10;
+
+      return {
+        margin,
+        minX: margin,
+        minY: headerBottom,
+        maxX: Math.max(margin, window.innerWidth - margin),
+        maxY: Math.max(headerBottom + 260, footerTop)
+      };
+    };
+
+    const getInitialFreePreviewSize = (src) => {
+      const source = (src || '').toLowerCase();
+      const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(source);
+
+      const isWide =
+        source.includes('front') ||
+        source.includes('screen') ||
+        source.includes('screenshot') ||
+        source.includes('landscape') ||
+        source.includes('wide') ||
+        source.includes('holding') ||
+        source.includes('built');
+
+      const isTall =
+        source.includes('portrait') ||
+        source.includes('poster') ||
+        source.includes('vertical');
+
+      const maxWidth = Math.max(260, Math.min(760, window.innerWidth - 40));
+
+      if (isVideo) return { width: Math.min(640, maxWidth), minHeight: 360 };
+      if (isWide) return { width: Math.min(720, maxWidth), minHeight: 340 };
+      if (isTall) return { width: Math.min(460, maxWidth), minHeight: 500 };
+
+      return { width: Math.min(560 + Math.round(Math.random() * 120), maxWidth), minHeight: 360 };
+    };
+
+    const constrainFreePreviewToViewport = (preview) => {
+      if (gridMode || isMobileView()) return;
+
+      const bounds = getViewportBoundsForFreePreview();
+      const rect = preview.getBoundingClientRect();
+
+      let left = preview.offsetLeft;
+      let top = preview.offsetTop;
+
+      const width = rect.width || parseFloat(preview.style.width) || 600;
+      const usableHeight = Math.max(260, bounds.maxY - bounds.minY);
+      const height = Math.min(rect.height || 360, usableHeight);
+
+      preview.style.maxHeight = `${usableHeight}px`;
+      preview.style.overflowY = 'auto';
+      preview.style.overflowX = 'hidden';
+
+      const maxLeft = Math.max(bounds.minX, bounds.maxX - width);
+      const maxTop = Math.max(bounds.minY, bounds.maxY - height);
+
+      left = Math.max(bounds.minX, Math.min(left, maxLeft));
+      top = Math.max(bounds.minY, Math.min(top, maxTop));
+
+      preview.style.left = `${left}px`;
+      preview.style.top = `${top}px`;
+      preview.style.transform = 'none';
+    };
+
+    const placeFreePreviewRandomly = (project, preview, data) => {
+      if (gridMode || isMobileView()) return;
+
+      const remembered = applyFreePreviewState(project, preview);
+      if (remembered) {
+        constrainFreePreviewToViewport(preview);
+        return;
+      }
+
+      const size = getInitialFreePreviewSize(data.image);
+      const bounds = getViewportBoundsForFreePreview();
+
+      const usableHeight = Math.max(260, bounds.maxY - bounds.minY);
+
+      preview.style.width = `${size.width}px`;
+      preview.style.minHeight = `${Math.min(size.minHeight, usableHeight)}px`;
+      preview.style.maxHeight = `${usableHeight}px`;
+      preview.style.height = 'auto';
+      preview.style.overflowY = 'auto';
+      preview.style.overflowX = 'hidden';
+      preview.style.transform = 'none';
+
+      const approxHeight = Math.min(Math.max(size.minHeight, 320), Math.max(320, bounds.maxY - bounds.minY));
+      const maxLeft = Math.max(bounds.minX, bounds.maxX - size.width);
+      const maxTop = Math.max(bounds.minY, bounds.maxY - approxHeight);
+
+      const left = bounds.minX + Math.round(Math.random() * Math.max(0, maxLeft - bounds.minX));
+      const top = bounds.minY + Math.round(Math.random() * Math.max(0, maxTop - bounds.minY));
+
+      preview.style.left = `${left}px`;
+      preview.style.top = `${top}px`;
+    };
+
+    const createPreviewContainer = (project) => {
+      const data = projectData[project] || { image: '', blurb: 'DETAILS COMING SOON.' };
+
+      if (openPreviews[project]) {
+        const p = openPreviews[project];
+
+        if (isMobileView()) {
+          p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (!gridMode) {
+          p.style.top = '50%';
+          p.style.left = '50%';
+          p.style.transform = 'translate(-50%, -50%)';
+        }
+
+        return;
+      }
+
+      const preview = document.createElement('div');
+      preview.className = 'preview';
+      preview.dataset.project = project;
+      preview.style.top = '50%';
+      preview.style.left = '50%';
+      preview.style.transform = 'translate(-50%, -50%)';
+      preview.style.zIndex = `${++zIndex}`;
+
+      // Title above media (as requested)
+      preview.innerHTML = `
         <button class="close-button" title="Close"></button>
         <div class="preview-title">${project}</div>
         <div class="preview-image-wrapper"></div>
         <p class="preview-blurb">${data.blurb}</p>
       `;
 
-            const mediaWrap = preview.querySelector('.preview-image-wrapper');
-            mediaWrap.appendChild(createMediaEl(data.image, `${project} Media`));
+      const mediaWrap = preview.querySelector('.preview-image-wrapper');
+      mediaWrap.appendChild(createMediaEl(data.image, `${project} Media`));
 
-            preview.addEventListener('wheel', (e) => {
-                if (!gridMode && !isMobileView()) {
-                    e.stopPropagation();
-                }
-            }, {
-                passive: true
-            });
-            preview.querySelector('.close-button').addEventListener('click', () => {
-                if (preview._ro) {
-                    try {
-                        preview._ro.disconnect();
-                    } catch (e) {}
-                    delete preview._ro;
-                }
-                if (preview._freeRO) {
-                    try {
-                        preview._freeRO.disconnect();
-                    } catch (e) {}
-                    delete preview._freeRO;
-                }
-                preview.remove();
-                delete openPreviews[project];
-                const activeItemToRemove = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
-                if (activeItemToRemove) activeItemToRemove.classList.remove('is-active');
-                const activeItem = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
-                if (activeItem) activeItem.classList.remove('is-active');
-            });
+      preview.addEventListener('wheel', (e) => {
+        if (!gridMode && !isMobileView()) {
+          e.stopPropagation();
+        }
+      }, { passive: true });
+preview.querySelector('.close-button').addEventListener('click', () => {
+        if (preview._ro) { try { preview._ro.disconnect(); } catch(e){} delete preview._ro; }
+        if (preview._freeRO) { try { preview._freeRO.disconnect(); } catch(e){} delete preview._freeRO; }
+        preview.remove();
+        delete openPreviews[project];
+        const activeItemToRemove = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
+        if (activeItemToRemove) activeItemToRemove.classList.remove('is-active');
+        const activeItem = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
+        if (activeItem) activeItem.classList.remove('is-active');
+      });
 
-            makeDraggable(preview);
+      makeDraggable(preview);
 
-            if (gridMode) {
-                gridContainer.appendChild(preview);
-                preview.classList.add('in-grid');
+      if (gridMode) {
+        gridContainer.appendChild(preview);
+        preview.classList.add('in-grid');
 
-                // Determine if this will be the only one open
-                const countBefore = Object.keys(openPreviews).length; // number already open (before adding this)
-                const {
-                    cols,
-                    effRow,
-                    containerHeight
-                } = getGridMetrics();
-                const minRows = Math.max(1, Math.ceil(350 / effRow));
+        // Determine if this will be the only one open
+        const countBefore = Object.keys(openPreviews).length; // number already open (before adding this)
+        const { cols, effRow, containerHeight } = getGridMetrics();
+        const minRows = Math.max(1, Math.ceil(350 / effRow));
 
-                let colSpan, rowSpan;
-                if (countBefore === 0) {
-                    // This is the only one → fill the viewable area
-                    colSpan = cols;
-                    rowSpan = Math.max(minRows, Math.ceil(containerHeight / effRow));
-                    preview.style.transform = 'translate(0,0)';
-                } else {
-                    // Otherwise open where it fits, with randomized sizing reduced to roughly 70%
-                    const randomSize = getRandomGridSizeForMedia(data.image);
+        let colSpan, rowSpan;
+        if (countBefore === 0) {
+          // This is the only one → fill the viewable area
+          colSpan = cols;
+          rowSpan = Math.max(minRows, Math.ceil(containerHeight / effRow));
+          preview.style.transform = 'translate(0,0)';
+        } else {
+          // Otherwise open where it fits, with randomized sizing reduced to roughly 70%
+          const randomSize = getRandomGridSizeForMedia(data.image);
 
-                    colSpan = Math.min(cols, randomSize.colSpan);
-                    rowSpan = Math.max(minRows, randomSize.rowSpan);
-                }
+          colSpan = Math.min(cols, randomSize.colSpan);
+          rowSpan = Math.max(minRows, randomSize.rowSpan);
+        }
 
-                const savedGridState = getGridPreviewState(project);
-                if (savedGridState) {
-                    colSpan = parseInt(savedGridState.colSpan || colSpan, 10);
-                    rowSpan = parseInt(savedGridState.rowSpan || rowSpan, 10);
-                }
+        const savedGridState = getGridPreviewState(project);
+        if (savedGridState) {
+          colSpan = parseInt(savedGridState.colSpan || colSpan, 10);
+          rowSpan = parseInt(savedGridState.rowSpan || rowSpan, 10);
+        }
 
-                preview.dataset.colSpan = String(colSpan);
-                preview.dataset.rowSpan = String(rowSpan);
+        preview.dataset.colSpan = String(colSpan);
+        preview.dataset.rowSpan = String(rowSpan);
 
-                if (savedGridState && savedGridState.colStart && savedGridState.rowStart) {
-                    preview.dataset.colStart = savedGridState.colStart;
-                    preview.dataset.rowStart = savedGridState.rowStart;
-                    preview.style.gridColumn = `${savedGridState.colStart} / span ${colSpan}`;
-                    preview.style.gridRow = `${savedGridState.rowStart} / span ${rowSpan}`;
-                } else {
-                    preview.style.gridColumn = `span ${colSpan}`;
-                    preview.style.gridRow = `span ${rowSpan}`;
-                }
+        if (savedGridState && savedGridState.colStart && savedGridState.rowStart) {
+          preview.dataset.colStart = savedGridState.colStart;
+          preview.dataset.rowStart = savedGridState.rowStart;
+          preview.style.gridColumn = `${savedGridState.colStart} / span ${colSpan}`;
+          preview.style.gridRow = `${savedGridState.rowStart} / span ${rowSpan}`;
+        } else {
+          preview.style.gridColumn = `span ${colSpan}`;
+          preview.style.gridRow = `span ${rowSpan}`;
+        }
 
-                addGridResizer(preview);
-                makeGridMovable(preview);
+        addGridResizer(preview);
+        makeGridMovable(preview);
 
-                ensureAutoSizeOnMediaLoad(preview, minRows);
-                requestAnimationFrame(() => autoSizeRowSpan(preview, minRows));
-            } else if (isMobileView()) {
-                mobileStackContainer.appendChild(preview);
-                requestAnimationFrame(() => {
-                    preview.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                });
-            } else {
-                document.body.appendChild(preview);
-                placeFreePreviewRandomly(project, preview, data);
-
-                if (window.ResizeObserver) {
-                    const freeRO = new ResizeObserver(() => {
-                        constrainFreePreviewToViewport(preview);
-                        saveFreePreviewState(project, preview);
-                    });
-                    freeRO.observe(preview);
-                    preview._freeRO = freeRO;
-                }
-            }
-
-            openPreviews[project] = preview;
-            const activeItem = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
-            if (activeItem) activeItem.classList.add('is-active');
-        };
-
-
-
-        const closeAllPreviews = () => {
-            Object.keys(openPreviews).forEach((project) => {
-                const preview = openPreviews[project];
-                if (!preview) return;
-
-                if (preview._ro) {
-                    try {
-                        preview._ro.disconnect();
-                    } catch (e) {}
-                    delete preview._ro;
-                }
-
-                if (preview._freeRO) {
-                    try {
-                        preview._freeRO.disconnect();
-                    } catch (e) {}
-                    delete preview._freeRO;
-                }
-
-                preview.remove();
-                delete openPreviews[project];
-            });
-
-            document.querySelectorAll('#projectList li.is-active').forEach((item) => {
-                item.classList.remove('is-active');
-            });
-        };
-
-        const updateProjectMenuHeading = () => {
-            const list = document.getElementById('projectList');
-            const heading = document.getElementById('projectMenuHeading');
-            if (!list || !heading) return;
-
-            if (list.scrollTop < 4) {
-                heading.textContent = 'PROJECTS';
-                return;
-            }
-
-            const items = Array.from(list.querySelectorAll('li[data-project]'));
-            if (!items.length) {
-                heading.textContent = 'PROJECTS';
-                return;
-            }
-
-            const listTop = list.getBoundingClientRect().top;
-            let active = items[0];
-
-            for (const item of items) {
-                const rect = item.getBoundingClientRect();
-                if (rect.top <= listTop + 10) {
-                    active = item;
-                } else {
-                    break;
-                }
-            }
-
-            heading.textContent = (active.dataset.category || 'PROJECTS').toUpperCase();
-        };
-
-        const initialiseMenuControls = () => {
-            const closeAllBtn = document.getElementById('closeAllBtn');
-            const projectListEl = document.getElementById('projectList');
-
-            if (closeAllBtn) {
-                closeAllBtn.onclick = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    closeAllPreviews();
-                };
-            }
-
-            if (projectListEl) {
-                projectListEl.addEventListener('scroll', updateProjectMenuHeading, {
-                    passive: true
-                });
-                projectListEl.addEventListener('wheel', () => requestAnimationFrame(updateProjectMenuHeading), {
-                    passive: true
-                });
-                projectListEl.addEventListener('touchmove', () => requestAnimationFrame(updateProjectMenuHeading), {
-                    passive: true
-                });
-                requestAnimationFrame(updateProjectMenuHeading);
-            }
-        };
-
-        initialiseMenuControls();
-
-        // Bind project clicks
-        document.querySelectorAll('#projectList li[data-project]').forEach((item) => {
-            item.addEventListener('click', () => {
-                const project = item.getAttribute('data-project');
-                createPreviewContainer(project);
-            });
+        ensureAutoSizeOnMediaLoad(preview, minRows);
+        requestAnimationFrame(() => autoSizeRowSpan(preview, minRows));
+      } else if (isMobileView()) {
+        mobileStackContainer.appendChild(preview);
+        requestAnimationFrame(() => {
+          preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
+      } else {
+        document.body.appendChild(preview);
+        placeFreePreviewRandomly(project, preview, data);
 
-        // Refit on resize in grid
-        window.addEventListener('resize', () => {
-            if (!gridMode) {
-                Object.values(openPreviews).forEach(p => constrainFreePreviewToViewport(p));
-                return;
-            }
+        if (window.ResizeObserver) {
+          const freeRO = new ResizeObserver(() => {
+            constrainFreePreviewToViewport(preview);
+            saveFreePreviewState(project, preview);
+          });
+          freeRO.observe(preview);
+          preview._freeRO = freeRO;
+        }
+      }
 
-            const {
-                effRow
-            } = getGridMetrics();
-            const minRows = Math.max(1, Math.ceil(350 / effRow));
-            Object.values(openPreviews).forEach(p => autoSizeRowSpan(p, minRows));
-        });
+      openPreviews[project] = preview;
+      const activeItem = document.querySelector(`#projectList li[data-project="${CSS.escape(project)}"]`);
+      if (activeItem) activeItem.classList.add('is-active');
+};
 
-        // Prevent image ghost dragging
-        document.addEventListener('dragstart', (e) => {
-            if (e.target && e.target.tagName === 'IMG') e.preventDefault();
-        });
-    </script>
+
+
+    const closeAllPreviews = () => {
+      Object.keys(openPreviews).forEach((project) => {
+        const preview = openPreviews[project];
+        if (!preview) return;
+
+        if (preview._ro) {
+          try { preview._ro.disconnect(); } catch(e) {}
+          delete preview._ro;
+        }
+
+        if (preview._freeRO) {
+          try { preview._freeRO.disconnect(); } catch(e) {}
+          delete preview._freeRO;
+        }
+
+        preview.remove();
+        delete openPreviews[project];
+      });
+
+      document.querySelectorAll('#projectList li.is-active').forEach((item) => {
+        item.classList.remove('is-active');
+      });
+    };
+
+    const updateProjectMenuHeading = () => {
+      const list = document.getElementById('projectList');
+      const heading = document.getElementById('projectMenuHeading');
+      if (!list || !heading) return;
+
+      if (list.scrollTop < 4) {
+        heading.textContent = 'PROJECTS';
+        return;
+      }
+
+      const items = Array.from(list.querySelectorAll('li[data-project]'));
+      if (!items.length) {
+        heading.textContent = 'PROJECTS';
+        return;
+      }
+
+      const listTop = list.getBoundingClientRect().top;
+      let active = items[0];
+
+      for (const item of items) {
+        const rect = item.getBoundingClientRect();
+        if (rect.top <= listTop + 10) {
+          active = item;
+        } else {
+          break;
+        }
+      }
+
+      heading.textContent = (active.dataset.category || 'PROJECTS').toUpperCase();
+    };
+
+    const initialiseMenuControls = () => {
+      const closeAllBtn = document.getElementById('closeAllBtn');
+      const projectListEl = document.getElementById('projectList');
+
+      if (closeAllBtn) {
+        closeAllBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeAllPreviews();
+        };
+      }
+
+      if (projectListEl) {
+        projectListEl.addEventListener('scroll', updateProjectMenuHeading, { passive: true });
+        projectListEl.addEventListener('wheel', () => requestAnimationFrame(updateProjectMenuHeading), { passive: true });
+        projectListEl.addEventListener('touchmove', () => requestAnimationFrame(updateProjectMenuHeading), { passive: true });
+        requestAnimationFrame(updateProjectMenuHeading);
+      }
+    };
+
+    initialiseMenuControls();
+
+// Bind project clicks
+    document.querySelectorAll('#projectList li[data-project]').forEach((item) => {
+      item.addEventListener('click', () => {
+        const project = item.getAttribute('data-project');
+        createPreviewContainer(project);
+      });
+    });
+
+    // Refit on resize in grid
+    window.addEventListener('resize', () => {
+      if (!gridMode) {
+        Object.values(openPreviews).forEach(p => constrainFreePreviewToViewport(p));
+        return;
+      }
+
+      const { effRow } = getGridMetrics();
+      const minRows = Math.max(1, Math.ceil(350 / effRow));
+      Object.values(openPreviews).forEach(p => autoSizeRowSpan(p, minRows));
+    });
+
+    // Prevent image ghost dragging
+    document.addEventListener('dragstart', (e) => {
+      if (e.target && e.target.tagName === 'IMG') e.preventDefault();
+    });
+  </script>
 </body>
-
 </html>
