@@ -13,7 +13,7 @@
     :root {
       --bg-primary: white;
       --bg-secondary: #FDFD96;
-      --text-primary: black;
+      --text-primary: gray;
       --text-secondary: #333;
       --border-color: #ddd;
       --shadow-color: rgba(0,0,0,0.2);
@@ -620,6 +620,231 @@
       }
     }
 
+
+    /* === SECTION 12: Contact / Draw System === */
+    .control-button#contactToggleBtn { font-size: 18px; }
+
+    .site-note {
+      position: absolute;
+      right: 12px;
+      bottom: 30px;
+      width: 38%;
+      font-size: 9px;
+      line-height: 1.2;
+      text-align: right;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-secondary);
+      opacity: 0.6;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
+    }
+
+    .content #projectList { width: 80%; }
+
+    .contact-overlay {
+      position: fixed;
+      inset: 78px 20px calc(20vh + 10px) 20px;
+      z-index: 20000;
+      display: none;
+      background: rgba(0,0,0,0.12);
+      pointer-events: auto;
+    }
+
+    .contact-overlay.active { display: block; }
+
+    .contact-window {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: min(720px, 100%);
+      height: 100%;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      box-shadow: 0 4px 20px var(--shadow-color);
+      padding: 18px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .contact-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .contact-header h3 {
+      margin: 0;
+      font-size: clamp(15px, 1.4vw, 18px);
+      line-height: 1;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .contact-close-x {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 0;
+    }
+
+    .contact-close-x::before {
+      content: "×";
+      font-size: 22px;
+      line-height: 1;
+      font-weight: bold;
+    }
+
+    .contact-close-x:hover {
+      color: var(--text-primary);
+      border-color: var(--text-primary);
+    }
+
+    .contact-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .contact-window input,
+    .contact-window textarea {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 11px;
+      text-transform: uppercase;
+      padding: 8px;
+      border-radius: 0;
+      outline: none;
+      margin-bottom: 8px;
+    }
+
+    .contact-window textarea {
+      min-height: 70px;
+      resize: vertical;
+      line-height: 1.35;
+    }
+
+    .draw-toolbar,
+    .send-row,
+    .colour-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .draw-toolbar button,
+    .send-row button {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 10px;
+      text-transform: uppercase;
+      padding: 6px 8px;
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    .draw-toolbar button:hover,
+    .draw-toolbar button.active,
+    .send-row button:hover {
+      border-color: var(--text-primary);
+      color: var(--text-secondary);
+    }
+
+    .colour-swatch {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--border-color);
+      background: var(--swatch);
+      padding: 0;
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    .colour-swatch.active {
+      outline: 2px solid var(--text-primary);
+      outline-offset: 1px;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border: 1px solid var(--border-color);
+      background: #f4f0e5;
+      margin-bottom: 8px;
+    }
+
+    #contactCanvas {
+      width: 100%;
+      height: auto;
+      max-height: 48vh;
+      display: block;
+      background:
+        radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px),
+        #f4f0e5;
+      background-size: 6px 6px;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .drawing-caption-preview {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 10px;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.2;
+      color: rgba(0,0,0,0.68);
+      text-transform: uppercase;
+      pointer-events: none;
+      letter-spacing: 0.4px;
+      mix-blend-mode: multiply;
+    }
+
+    .contact-status {
+      min-height: 14px;
+      color: var(--text-secondary);
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 800px) {
+      .site-note { display: none; }
+      .content #projectList { width: 100%; }
+
+      .contact-overlay {
+        inset: 58px 0 calc(26vh + 4px) 0;
+      }
+
+      .contact-window {
+        width: 100%;
+        height: 100%;
+        padding: 12px;
+      }
+
+      .contact-form-grid { grid-template-columns: 1fr; }
+      #contactCanvas { max-height: 34vh; }
+    }
+
 </style>
 </head>
 <body>
@@ -634,10 +859,11 @@
   </div>
 
   <div class="branding">
-    <div class="branding-text" aria-label="DNGR GOODS">HARBOURER</div>
+    <div class="branding-text" aria-label="HARBOURER">HARBOURER</div>
     <div class="control-buttons">
       <button class="control-button" id="invertBtn" title="Toggle Dark Mode">☯</button>
       <button class="control-button" id="gridBtn" title="Toggle Grid Layout">▦</button>
+      <button class="control-button" id="contactToggleBtn" title="Contact / Draw">✎</button>
     </div>
   </div>
 
@@ -678,6 +904,12 @@
       <li data-project="PROJECT TWENTY-FIVE" data-category="EXPERIMENTAL"><span>25</span>PROJECT TWENTY-FIVE</li>
     </ul>
 
+    <div class="site-note" aria-label="Copyright notice">
+      © HARBOURER <span id="copyrightYear"></span><br>
+      ALL RIGHTS RESERVED<br>
+      NO AI TRAINING OR DATA COLLECTION
+    </div>
+
     <!-- Footer info moved into menu -->
     <div class="info-bar" id="infoBar">
       <div class="info-cell">DNGR GOODS</div>
@@ -689,6 +921,55 @@
   </div>
 
   <div class="three-container"></div>
+
+  <!-- SECTION 12: Contact / Draw System -->
+  <section class="contact-overlay" id="contactPanel" aria-label="Contact DNGR GOODS">
+    <div class="contact-window">
+      <div class="contact-header">
+        <h3>CONTACT / DRAW</h3>
+        <button class="contact-close-x" id="closeContactBtn" type="button" title="Close contact panel"></button>
+      </div>
+
+
+      <div class="draw-toolbar">
+        <button class="draw-tool active" data-tool="pen" type="button">PEN</button>
+        <button class="draw-tool" data-tool="eraser" type="button">ERASER</button>
+        <button class="draw-tool" data-tool="fill" type="button">FILL</button>
+        <button id="undoDrawingBtn" type="button">UNDO</button>
+        <button id="redoDrawingBtn" type="button">REDO</button>
+        <button id="clearDrawingBtn" type="button">CLEAR</button>
+        <button id="downloadDrawingBtn" type="button">SAVE PNG</button>
+      </div>
+
+      <div class="colour-row" id="colourRow" aria-label="Drawing colours">
+        <button class="colour-swatch active" data-colour="#111111" style="--swatch:#111111" title="Ink Black"></button>
+        <button class="colour-swatch" data-colour="#b45a50" style="--swatch:#b45a50" title="Dusty Red"></button>
+        <button class="colour-swatch" data-colour="#d4b83f" style="--swatch:#d4b83f" title="Muted Yellow"></button>
+        <button class="colour-swatch" data-colour="#6f8f4e" style="--swatch:#6f8f4e" title="Olive"></button>
+        <button class="colour-swatch" data-colour="#87CEEB" style="--swatch:#87CEEB" title="Dusty Blue"></button>
+        <button class="colour-swatch" data-colour="#f0eadf" style="--swatch:#f0eadf" title="Off White"></button>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="contactCanvas" width="900" height="560"></canvas>
+        <div class="drawing-caption-preview" id="drawingCaptionPreview"></div>
+      </div>
+      <div class="contact-form-grid">
+          <input id="drawingCaption" maxlength="90" placeholder="LEAVE A NOTE" />
+        <input id="contactName" placeholder="NAME" autocomplete="name" />
+        <input id="contactEmail" placeholder="EMAIL" autocomplete="email" />
+      </div>
+       <textarea id="contactMessage" placeholder="MESSAGE"></textarea>
+      
+
+      <div class="send-row">
+        <button id="sendContactBtn" type="button">SEND / PREPARE EMAIL</button>
+      </div>
+
+      <div class="contact-status" id="contactStatus"></div>
+    </div>
+  </section>
+
 
   <script>
     const openPreviews = {};
@@ -1587,6 +1868,299 @@ preview.querySelector('.close-button').addEventListener('click', () => {
     document.addEventListener('dragstart', (e) => {
       if (e.target && e.target.tagName === 'IMG') e.preventDefault();
     });
+
+    /* === SECTION 12: Contact / Draw System === */
+    const setupContactPanel = () => {
+      const overlay = document.getElementById('contactPanel');
+      const toggle = document.getElementById('contactToggleBtn');
+      const close = document.getElementById('closeContactBtn');
+      const canvas = document.getElementById('contactCanvas');
+      const status = document.getElementById('contactStatus');
+      const clearBtn = document.getElementById('clearDrawingBtn');
+      const downloadBtn = document.getElementById('downloadDrawingBtn');
+      const sendBtn = document.getElementById('sendContactBtn');
+      const undoBtn = document.getElementById('undoDrawingBtn');
+      const redoBtn = document.getElementById('redoDrawingBtn');
+      const captionInput = document.getElementById('drawingCaption');
+      const captionPreview = document.getElementById('drawingCaptionPreview');
+      const yearEl = document.getElementById('copyrightYear');
+      const tools = document.querySelectorAll('.draw-tool');
+      const swatches = document.querySelectorAll('.colour-swatch');
+
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+      if (!overlay || !toggle || !canvas) return;
+
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      let drawing = false;
+      let tool = 'pen';
+      let colour = '#111111';
+      let last = null;
+      const undoStack = [];
+      const redoStack = [];
+      const MAX_HISTORY = 30;
+
+      const setStatus = (text) => {
+        if (!status) return;
+        status.textContent = text;
+        clearTimeout(setStatus._timer);
+        setStatus._timer = setTimeout(() => status.textContent = '', 2200);
+      };
+
+      const saveHistory = () => {
+        try {
+          undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+          if (undoStack.length > MAX_HISTORY) undoStack.shift();
+          redoStack.length = 0;
+        } catch(e) {}
+      };
+
+      const seedCanvas = (record = false) => {
+        if (record) saveHistory();
+        ctx.fillStyle = '#f4f0e5';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(0,0,0,0.06)';
+        for (let x = 0; x < canvas.width; x += 8) {
+          for (let y = 0; y < canvas.height; y += 8) {
+            ctx.beginPath();
+            ctx.arc(x + Math.random() * 1.5, y + Math.random() * 1.5, 0.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      };
+
+      const undoDrawing = () => {
+        if (!undoStack.length) return setStatus('NOTHING TO UNDO');
+        redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        ctx.putImageData(undoStack.pop(), 0, 0);
+        setStatus('UNDO');
+      };
+
+      const redoDrawing = () => {
+        if (!redoStack.length) return setStatus('NOTHING TO REDO');
+        undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        ctx.putImageData(redoStack.pop(), 0, 0);
+        setStatus('REDO');
+      };
+
+      const drawCaptionToCanvas = () => {
+        const text = (captionInput?.value || '').trim().toUpperCase();
+        if (!text) return;
+        ctx.save();
+        ctx.font = '14px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = 'rgba(0,0,0,0.68)';
+        ctx.fillText(text.slice(0, 90), canvas.width / 2, canvas.height - 18);
+        ctx.restore();
+      };
+
+      const getPoint = (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const source = event.touches ? event.touches[0] : event;
+        return {
+          x: Math.floor(((source.clientX - rect.left) / rect.width) * canvas.width),
+          y: Math.floor(((source.clientY - rect.top) / rect.height) * canvas.height)
+        };
+      };
+
+      const hexToRgba = (hex) => {
+        const clean = hex.replace('#', '');
+        return [
+          parseInt(clean.slice(0, 2), 16),
+          parseInt(clean.slice(2, 4), 16),
+          parseInt(clean.slice(4, 6), 16),
+          255
+        ];
+      };
+
+      const floodFill = (x, y, fillHex) => {
+        if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) return;
+        saveHistory();
+
+        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = img.data;
+        const w = canvas.width;
+        const h = canvas.height;
+        const start = (y * w + x) * 4;
+        const target = [data[start], data[start + 1], data[start + 2], data[start + 3]];
+        const fill = hexToRgba(fillHex);
+        const tolerance = 42;
+
+        const same = (i) => (
+          Math.abs(data[i] - target[0]) +
+          Math.abs(data[i + 1] - target[1]) +
+          Math.abs(data[i + 2] - target[2]) +
+          Math.abs(data[i + 3] - target[3])
+        ) <= tolerance;
+
+        const stack = [[x, y]];
+        const seen = new Uint8Array(w * h);
+
+        while (stack.length) {
+          const [px, py] = stack.pop();
+          if (px < 0 || py < 0 || px >= w || py >= h) continue;
+          const p = py * w + px;
+          if (seen[p]) continue;
+          seen[p] = 1;
+          const i = p * 4;
+          if (!same(i)) continue;
+
+          data[i] = fill[0];
+          data[i + 1] = fill[1];
+          data[i + 2] = fill[2];
+          data[i + 3] = 255;
+
+          stack.push([px + 1, py], [px - 1, py], [px, py + 1], [px, py - 1]);
+        }
+
+        ctx.putImageData(img, 0, 0);
+        setStatus('FILLED');
+      };
+
+      const drawTo = (point) => {
+        if (!last) {
+          last = point;
+          return;
+        }
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = tool === 'eraser' ? '#f4f0e5' : colour;
+        ctx.lineWidth = tool === 'eraser' ? 22 : 5.6;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(last.x, last.y);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+
+        if (tool === 'pen') {
+          ctx.fillStyle = 'rgba(0,0,0,0.18)';
+          for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.arc(point.x + (Math.random() - 0.5) * 16, point.y + (Math.random() - 0.5) * 16, Math.random() * 1.4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.restore();
+        last = point;
+      };
+
+      const startDrawing = (event) => {
+        event.preventDefault();
+        const point = getPoint(event);
+
+        if (tool === 'fill') {
+          floodFill(point.x, point.y, colour);
+          return;
+        }
+
+        saveHistory();
+        drawing = true;
+        last = point;
+      };
+
+      const moveDrawing = (event) => {
+        if (!drawing) return;
+        event.preventDefault();
+        drawTo(getPoint(event));
+      };
+
+      const stopDrawing = () => {
+        drawing = false;
+        last = null;
+      };
+
+      toggle.addEventListener('click', () => {
+        overlay.classList.toggle('active');
+        toggle.classList.toggle('active', overlay.classList.contains('active'));
+      });
+
+      close?.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        toggle.classList.remove('active');
+      });
+
+      tools.forEach(button => {
+        button.addEventListener('click', () => {
+          tool = button.dataset.tool;
+          tools.forEach(b => b.classList.toggle('active', b === button));
+        });
+      });
+
+      swatches.forEach(button => {
+        button.addEventListener('click', () => {
+          colour = button.dataset.colour;
+          swatches.forEach(s => s.classList.toggle('active', s === button));
+        });
+      });
+
+      captionInput?.addEventListener('input', () => {
+        captionPreview.textContent = captionInput.value;
+      });
+
+      clearBtn?.addEventListener('click', () => {
+        seedCanvas(true);
+        setStatus('DRAWING CLEARED');
+      });
+
+      undoBtn?.addEventListener('click', undoDrawing);
+      redoBtn?.addEventListener('click', redoDrawing);
+
+      document.addEventListener('keydown', (event) => {
+        if (!(event.ctrlKey || event.metaKey)) return;
+        const key = event.key.toLowerCase();
+        if (key === 'z' && !event.shiftKey) {
+          event.preventDefault();
+          undoDrawing();
+        }
+        if ((key === 'z' && event.shiftKey) || key === 'y') {
+          event.preventDefault();
+          redoDrawing();
+        }
+      });
+
+      downloadBtn?.addEventListener('click', () => {
+        saveHistory();
+        drawCaptionToCanvas();
+        const link = document.createElement('a');
+        link.download = 'dngr-contact-drawing.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        setStatus('DRAWING SAVED');
+      });
+
+      sendBtn?.addEventListener('click', () => {
+        saveHistory();
+        drawCaptionToCanvas();
+        const name = document.getElementById('contactName')?.value || '';
+        const email = document.getElementById('contactEmail')?.value || '';
+        const message = document.getElementById('contactMessage')?.value || '';
+        const caption = captionInput?.value || '';
+
+        const subject = encodeURIComponent(`DNGR GOODS CONTACT — ${name || 'NEW MESSAGE'}`);
+        const body = encodeURIComponent(
+          `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}\n\nDrawing Caption:\n${caption}\n\nDrawing:\nPlease attach the saved PNG drawing, or connect this form to Formspree / EmailJS to send the drawing automatically.`
+        );
+
+        window.location.href = `mailto:danial@dngrgoods.com?subject=${subject}&body=${body}`;
+        setStatus('EMAIL PREPARED — SAVE PNG IF NEEDED');
+      });
+
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', moveDrawing);
+      window.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('touchstart', startDrawing, { passive: false });
+      canvas.addEventListener('touchmove', moveDrawing, { passive: false });
+      canvas.addEventListener('touchend', stopDrawing);
+      canvas.addEventListener('touchcancel', stopDrawing);
+
+      seedCanvas(false);
+    };
+
+    setupContactPanel();
+
   </script>
 </body>
 </html>
