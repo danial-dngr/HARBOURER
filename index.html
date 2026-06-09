@@ -7,12 +7,9 @@
 
   <!-- Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script type="module" src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"></script>
-  <script
-  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-  async
-  defer>
-</script>
+
   <style>
     :root {
       --bg-primary: white;
@@ -977,16 +974,11 @@ Retrieved 2026-06-05, License - CC BY-SA 3.0
       </div>
        <textarea id="contactMessage" placeholder="MESSAGE"></textarea>
       
-      <div class="cf-turnstile"
-     data-sitekey="0x4AAAAAADhiqM44DLXieS0e">
-</div>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAADhiqM44DLXieS0e"></div>
 
-<button id="sendContactBtn">
-    SEND / PREPARE EMAIL
+<button id="sendContactBtn" type="button">
+  SEND / PREPARE EMAIL
 </button>
-      <div class="send-row">
-        <button id="sendContactBtn" type="button">SEND / PREPARE EMAIL</button>
-      </div>
 
       <div class="contact-status" id="contactStatus"></div>
     </div>
@@ -2152,14 +2144,12 @@ preview.querySelector('.close-button').addEventListener('click', () => {
         link.click();
         setStatus('DRAWING SAVED');
       });
-      const token =
-    document.querySelector(
-        '[name="cf-turnstile-response"]'
-    )?.value;
+      const turnstileToken =
+  document.querySelector('[name="cf-turnstile-response"]')?.value;
 
-if (!token) {
-    setStatus("VERIFY YOU ARE HUMAN");
-    return;
+if (!turnstileToken) {
+  setStatus('VERIFY YOU ARE HUMAN');
+  return;
 }
       sendBtn?.addEventListener('click', () => {
         saveHistory();
