@@ -128,7 +128,15 @@ Retrieved 2026-06-05, License - CC BY-SA 3.0
       text-transform: uppercase;
       display: flex; align-items: center; gap: 12px;
     }
-    .branding-text { line-height: 1; }
+
+    .branding-logo {
+    height: clamp(16px, 2vw, 28px);
+    width: auto;
+    display: block;
+}
+    .branding-logo {
+  color: var(--text-primary);
+}
 
     .control-buttons { display: flex; gap: 8px; margin-left: 20px; }
     .control-button {
@@ -871,7 +879,11 @@ Retrieved 2026-06-05, License - CC BY-SA 3.0
   </div>
 
   <div class="branding">
-    <div class="branding-text" aria-label="HARBOURER">HARBOURER</div>
+    <img
+        class="branding-logo"
+        src="images/harbourers-logo.svg"
+        alt="HARBOURER">
+</div>
     <div class="control-buttons">
       <button class="control-button" id="invertBtn" title="Toggle Dark Mode">☯</button>
       <button class="control-button" id="gridBtn" title="Toggle Grid Layout">▦</button>
