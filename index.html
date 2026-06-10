@@ -7,7 +7,6 @@
 
   <!-- Libraries -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <script type="module" src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"></script>
 
   <style>
     :root {
@@ -221,14 +220,8 @@ Retrieved 2026-06-05, License - CC BY-SA 3.0
     /* Original footer is hidden to avoid duplication */
     .footer { display: none; }
 
-    .lottie-wrapper {
-      position: fixed; top: 20px; left: 20px;
-      z-index: 6; width: clamp(40px, 8vw, 80px); height: clamp(40px, 8vw, 80px);
-      pointer-events: none;
-    }
-    .lottie-wrapper dotlottie-player {
-      width: 100%; height: 100%; background: transparent !important;
-    }
+  
+   
 
     /* === Grid Area === */
     .grid-container {
@@ -868,20 +861,12 @@ Retrieved 2026-06-05, License - CC BY-SA 3.0
 </style>
 </head>
 <body>
-  <div class="lottie-wrapper" aria-hidden="true">
-    <dotlottie-player
-      src="https://lottie.host/d78de815-63f5-4083-8b23-d3833bcfd65f/1aTwDaznYJ.lottie"
-      background="transparent"
-      speed="0.5"
-      loop
-      autoplay>
-    </dotlottie-player>
-  </div>
+  
 
   <div class="branding">
     <img
         class="branding-logo"
-        src="images/harbourers-logo.svg"
+        src="harbourers-logo.svg"
         alt="HARBOURER">
 </div>
     <div class="control-buttons">
