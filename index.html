@@ -9,9 +9,9 @@
 
   <style>
     :root {
-      --bg-primary: white;
-      --bg-secondary: #FDFD96;
-      --text-primary: gray;
+      --bg-primary: beige;
+      --bg-secondary: #FDFD75;
+      --text-primary: #4199e1;
       --text-secondary: #333;
       --border-color: #ddd;
       --shadow-color: rgba(0,0,0,0.2);
@@ -27,27 +27,29 @@
       --swiss-row: 12px; /* baseline row height */
 
       /* Bottom menu columns (sync with info bar) */
-      --menu-cols: 5;
+      --menu-cols: 4;
 
       /* Overlap in grid mode (~15px) */
       --overlap-offset: 0px;
     }
+    
 
     @media (max-width: 800px) {
       :root { --menu-cols: 2; }
     }
 
     body.dark-mode {
-      --bg-primary: #1a1a1a;
-      --bg-secondary: #2a2a2a;
-      --text-primary: red;
-      --text-secondary: #c0c0c0;
+      --bg-primary: #111509;
+      --bg-secondary: #4199e1;
+      --text-primary: beige;
+      --text-secondary: beige;
+      --text-tertiary: #111509;
       --border-color: #444;
       --shadow-color: rgba(255,255,255,0.1);
       --hover-color: #66b3ff;
 
-      --scrollbar-thumb: #c0c0c0;
-      --scrollbar-track: #111;
+      --scrollbar-thumb: beige;
+      --scrollbar-track: royalblue;
     }
 
 
@@ -161,9 +163,10 @@
       box-sizing: border-box;
       transition: background 0.3s ease, border-color 0.3s ease;
     }
+    
     .content h4 {
       font-weight: 400; font-size: clamp(14px, 1.4vw, 18px);
-      margin: 0 0 6px 0; color: var(--text-primary);
+      margin: 0 0 6px 0; color: var(--text-tertiary);
       text-transform: uppercase; letter-spacing: 0.5px; line-height: 1;
     }
     .content ul {
@@ -175,7 +178,7 @@
       line-height: 1;
     }
     .content ul li {
-      cursor: pointer; margin: 0; color: var(--text-primary); font-weight: 400;
+      cursor: pointer; margin: 0; color: var(--text-tertiary); font-weight: 400;
       padding-right: clamp(6px, 1vw, 12px); border-right: 1px solid var(--border-color);
       text-transform: uppercase; line-height: 1;
       padding-bottom: clamp(0.5px, 0.3vw, 2px);
@@ -185,7 +188,7 @@
     .content ul li:hover { color: var(--hover-color); }
     .content ul li span {
       font-weight: 700; font-size: clamp(10px, 1vw, 11px);
-      margin-right: clamp(3px, 0.5vw, 6px); color: var(--text-primary);
+      margin-right: clamp(3px, 0.5vw, 6px); color: var(--text-tertiary);
     }
 
     /* Info bar moved into menu as single line */
@@ -193,7 +196,7 @@
       display: grid; grid-template-columns: repeat(var(--menu-cols), 1fr);
       column-gap: 0;
       font-size: clamp(10px, 1.1vw, 12px);
-      color: var(--text-primary);
+      color: var(--text-tertiary);
       margin-top: 6px;
       border-top: 1px solid var(--border-color);
       padding-top: 6px;
@@ -280,7 +283,7 @@
     /* Title ABOVE image (as you liked) */
     .preview-title {
       font-size: 16px; font-weight: 700;
-      margin: 0 0 12px 0; color: var(--text-primary);
+      margin: 0 0 12px 0; color: var(--text-secondary);
       text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;
     }
 
@@ -781,13 +784,13 @@
         right: 0;
         min-height: 58px;
         padding: 10px 12px;
-        background: var(--bg-primary);
+        background: var(--bg-secondary);
         border-bottom: 1px solid var(--border-color);
         z-index: 10001;
       }
 
       .branding-text {
-        font-size: 18px;
+        font-size: 0px;
       }
 
       .control-buttons {
@@ -1422,19 +1425,18 @@
     </ul>
 
     <div class="site-note" aria-label="Copyright notice">
-      © HARBOURER <span id="copyrightYear"></span><br>
+      © HARBOURERS <span id="copyrightYear"></span><br>
       ALL RIGHTS RESERVED<br>
       NO AI TRAINING OR DATA COLLECTION
     </div>
 
     <!-- Footer info moved into menu -->
     <div class="info-bar" id="infoBar">
-      <div class="info-cell">DNGR GOODS</div>
+      <div class="info-cell">HARBOURER</div>
       <div class="info-cell">DANIAL GRAHAM</div>
-      <div class="info-cell">GOODS &amp; VISUAL SERVICES</div>
+      <div class="info-cell">VISUAL SERVICES STUDIO</div>
       <div class="info-cell"><a href="mailto:danial@dngrgoods.com">DANIAL@DNGRGOODS.COM</a></div>
-      <div class="info-cell"><a href="tel:+61400165501">0400 165 501</a></div>
-    </div>
+      
   </div>
 
   <div class="three-container"></div>
@@ -1443,7 +1445,7 @@
   <section class="contact-overlay" id="contactPanel" aria-label="Contact DNGR GOODS">
     <div class="contact-window">
       <div class="contact-header">
-        <h3>SAY HI AND SEND ME A DARWING</h3>
+        <h3>REACH OUT &/OR SEND US A DRAWING</h3>
         <button class="contact-close-x" id="closeContactBtn" type="button" title="Close contact panel"></button>
       </div>
 
@@ -1472,14 +1474,14 @@
         <div class="drawing-caption-preview" id="drawingCaptionPreview"></div>
       </div>
       <div class="contact-form-grid">
-          <input id="drawingCaption" maxlength="90" placeholder="NAME YOUR PIECE" />
-        <input id="contactName" placeholder="NAME" autocomplete="name" />
+          <input id="drawingCaption" maxlength="90" placeholder="NAME YOUR ARTWORK" />
+        <input id="contactName" placeholder="YOUR NAME" autocomplete="name" />
         <input id="contactEmail" placeholder="EMAIL" autocomplete="email" />
       </div>
        <textarea id="contactMessage" placeholder="MESSAGE"></textarea>
 
 <button id="sendContactBtn" type="button">
-  SEND / PREPARE EMAIL
+  SEND
 </button>
 
       <div class="contact-status" id="contactStatus"></div>
