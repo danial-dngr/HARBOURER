@@ -1298,10 +1298,14 @@
 
 
     /* === Final repair: branding + drawing === */
-    .branding{position:fixed;top:20px;left:20px;right:20px;z-index:100;color:var(--text-primary)!important;display:flex;align-items:flex-start;gap:16px;pointer-events:auto;}
-    .branding-logo{height:clamp(42px,6vw,78px);width:auto;max-width:min(58vw,520px);display:block;color:var(--text-primary);flex:0 1 auto;}
+    .branding{position:fixed;top:20px;left:20px;right:20px;z-index:100;color:var(--text-primary)!important;display:flex;align-items:flex-start;justify-content:center;gap:16px;pointer-events:auto;}
+    .branding-logo{height:clamp(64px,8vw,115px);width:auto;max-width:min(56vw,700px);display:block;color:var(--text-primary);flex:0 1 auto;}
     .branding-logo path,.branding-logo polygon,.branding-logo rect,.branding-logo circle,.branding-logo ellipse,.branding-logo line,.branding-logo polyline{fill:currentColor;}
-    .control-buttons{display:flex;gap:8px;margin-left:0;flex:0 0 auto;}
+    .control-buttons{position:absolute;top:0;left:0;right:0;display:block;margin-left:0;flex:0 0 auto;pointer-events:none;}
+    .control-buttons .control-button{position:absolute;pointer-events:auto;}
+    #invertBtn{left:0;}
+    #gridBtn{left:50px;}
+    #contactToggleBtn{right:0;}
     .draw-toolbar,.send-row,.colour-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;}
     .draw-toolbar button,.send-row button{background:transparent;border:1px solid var(--border-color);color:var(--text-primary);font-family:inherit;font-size:10px;text-transform:uppercase;padding:6px 8px;border-radius:0;cursor:pointer;}
     .draw-toolbar button:hover,.draw-toolbar button.active,.send-row button:hover{border-color:var(--text-primary);color:var(--text-secondary);}
@@ -1309,7 +1313,7 @@
     .colour-swatch.active{outline:2px solid var(--text-primary);outline-offset:1px;}
     .canvas-wrap{position:relative;border:1px solid var(--border-color);background:#f4f0e5;margin-bottom:8px;}
     #contactCanvas{width:100%;height:auto;max-height:48vh;display:block;background:radial-gradient(circle,rgba(0,0,0,.08) 1px,transparent 1px),#f4f0e5;background-size:6px 6px;touch-action:none;cursor:crosshair;}
-    @media(max-width:800px){.branding{top:0;left:0;right:0;min-height:58px;padding:10px 12px;background:var(--bg-primary);border-bottom:1px solid var(--border-color);z-index:10001;align-items:center}.branding-logo{height:32px;max-width:52vw}.control-buttons{margin-left:auto}#contactCanvas{max-height:34vh}}
+    @media(max-width:800px){.branding{top:0;left:0;right:0;min-height:58px;padding:8px 10px;background:var(--bg-primary);border-bottom:1px solid var(--border-color);z-index:10001;align-items:center;justify-content:center}.branding-logo{height:42px;max-width:44vw}.control-buttons{top:8px;left:10px;right:10px;margin-left:0}.control-button{padding:8px 9px;font-size:14px}#invertBtn{left:0}#gridBtn{left:42px;display:inline-flex!important}#contactToggleBtn{right:0}#contactCanvas{max-height:34vh}}
 
 </style>
 </head>
